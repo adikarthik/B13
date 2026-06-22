@@ -1,4 +1,4 @@
 resource local_file file{
-name = "abc.txt"
+filename = "abc.txt"
 content = "this first terraform file"
 }

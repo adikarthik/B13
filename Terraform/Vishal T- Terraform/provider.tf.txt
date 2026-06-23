@@ -1,0 +1,18 @@
+terraform {
+  required_version = "1.15.6"
+
+  cloud {
+
+    organization = "vishal-org1234"
+
+    workspaces {
+      name = "terraform_git"
+    }
+  }
+}
+
+provider "azurerm" {
+  features {}
+}
+~
+~

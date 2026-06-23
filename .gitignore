@@ -23,8 +23,15 @@
 hs_err_pid*
 replay_pid*
 
-# terrafom files which is affted the push
-.terraform/
+# Terraform
+**/.terraform/*
 *.tfstate
-*.tfstate.backup
-*.zip
+*.tfstate.*
+crash.log
+
+# Sensitive vars
+*.tfvars
+*.tfvars.json
+
+# Optional
+.terraform.lock.hcl

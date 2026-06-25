@@ -1,0 +1,2 @@
+RGname = "rohi"
+RGlocation = "eastus"

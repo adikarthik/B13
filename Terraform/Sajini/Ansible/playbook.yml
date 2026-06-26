@@ -1,0 +1,85 @@
+---
+- name: Ansible All Concepts Demo
+  hosts: web
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+
+    - name: Install package
+      apt:
+        name: "{{ package_name }}"
+        state: present
+        update_cache: yes
+      notify: Restart Service
+
+    - name: Create user
+      user:
+        name: "{{ user_name }}"
+        state: present
+
+    - name: Create directory
+      file:
+        path: "{{ directory_name }}"
+        state: directory
+        mode: "{{ file_permission }}"
+
+    - name: Copy file
+      copy:
+        content: "Welcome to Ansible"
+        dest: "{{ directory_name }}/sample.txt"
+
+    - name: Create template file
+      template:
+        src: info.j2
+        dest: "{{ directory_name }}/info.txt"
+      ignore_errors: yes
+
+    - name: Create empty file
+      file:
+        path: "{{ directory_name }}/demo.txt"
+        state: touch
+
+    - name: Download file
+      get_url:
+        url: https://example.com
+        dest: "{{ directory_name }}/index.html"
+      ignore_errors: yes
+
+    - name: Start service
+      service:
+        name: "{{ service_name }}"
+        state: started
+        enabled: yes
+
+    - name: Check package version
+      command: git --version
+      register: output
+
+    - name: Display output
+      debug:
+        var: output.stdout
+
+    - name: Run only on Debian
+      apt:
+        name: vim
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Create multiple users
+      user:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - user1
+        - user2
+        - user3
+
+  handlers:
+
+    - name: Restart Service
+      service:
+        name: "{{ service_name }}"
+        state: restarted

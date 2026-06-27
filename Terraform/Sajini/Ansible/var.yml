@@ -1,0 +1,6 @@
+---
+package_name: git
+service_name: apache2
+user_name: demo
+directory_name: /opt/demo
+file_permission: "0755"

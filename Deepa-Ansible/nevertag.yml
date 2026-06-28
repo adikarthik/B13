@@ -1,0 +1,26 @@
+---
+- name: Demonstrate never tag in Ansible
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+
+    - name: This task always runs
+      debug:
+        msg: "This task runs normally"
+
+    - name: This task is marked with never tag (will NOT run by default)
+      debug:
+        msg: "⚠ This is a restricted task"
+      tags:
+        - never
+
+    - name: Another normal task
+      debug:
+        msg: "This runs as well"
+
+    - name: Dangerous task (simulated delete)
+      debug:
+        msg: "Deleting something important..."
+      tags:
+        - never

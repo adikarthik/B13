@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Copy test.txt file from control machine to client machine
+      copy:
+        src: /home/azureuser/test.txt
+        dest: /home/azureuser/

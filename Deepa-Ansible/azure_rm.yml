@@ -1,0 +1,7 @@
+plugin: azure.azcollection.azure_rm
+
+auth_source: auto   # IMPORTANT FIX
+
+include_vm_resource_groups:
+  - DEEPA
+

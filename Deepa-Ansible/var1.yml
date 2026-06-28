@@ -1,0 +1,25 @@
+---
+- name: Block rescue example
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+
+    - name: Demo block-rescue
+      block:
+        - name: Run valid command
+          command: ls
+
+        - name: Another task
+          debug:
+            msg: "Inside block"
+
+      rescue:
+        - name: Handle failure
+          debug:
+            msg: "Something failed but handled"
+
+      always:
+        - name: Always run this
+          debug:
+            msg: "This runs always"

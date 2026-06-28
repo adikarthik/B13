@@ -1,0 +1,16 @@
+---
+- hosts: tomcat
+  become: yes
+
+  tasks:
+
+    - name: Copy Amazon WAR file
+      copy:
+        src: /home/deepa/Desktop/Amazon/Amazon/Amazon-Web/target/Amazon.war
+        dest: /opt/tomcat/apache-tomcat-9.0.80/webapps/Amazon.war
+
+    - name: Restart Tomcat
+      shell: |
+        /opt/tomcat/apache-tomcat-9.0.80/bin/shutdown.sh || true
+        sleep 10
+        /opt/tomcat/apache-tomcat-9.0.80/bin/startup.sh

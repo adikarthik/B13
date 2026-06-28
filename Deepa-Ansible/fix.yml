@@ -1,0 +1,22 @@
+---
+- name: Handler + failure demo
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+
+    - name: Copy WAR file
+      copy:
+        src: /tmp/sample.war
+        dest: /tmp/sample.war
+      notify: restart tomcat
+
+    - name: Force failure in last task
+      command: /bin/true
+      notify: restart tomcat
+
+  handlers:
+
+    - name: restart tomcat
+      debug:
+        msg: "Tomcat restarted"

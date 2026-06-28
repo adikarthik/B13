@@ -1,5 +1,5 @@
 # Simple Resource Group
 resource "azurerm_resource_group" "rg" {
-  name     = "rg-simple-demo"
+  name     = "vs_rg"
   location = "East US"
 }

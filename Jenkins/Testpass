@@ -1,0 +1,32 @@
+pipeline { 
+    agent any 
+ 
+    stages { 
+        stage('Create Test Script') { 
+            steps { 
+                writeFile file: 'test.sh', text: ''' 
+#!/bin/bash 
+ 
+echo "Running test..." 
+ 
+if [ -f report.zip ]; then 
+    echo "ERROR: report.zip already exists." 
+    exit 1 
+fi 
+ 
+echo "Generating report..." 
+touch report.zip 
+ 
+echo "Test Passed." 
+''' 
+                sh 'chmod +x test.sh' 
+            } 
+        } 
+ 
+        stage('Run Test') { 
+            steps { 
+                sh './test.sh' 
+            } 
+        } 
+    } 
+}

@@ -31,3 +31,12 @@ location = var.location
 account_tier = "Standard"
 account_replication_type = "LRS"
 }
+
+resource "azurerm_managed_disk" "mydisk" {
+name = var.name
+resource_group_name = var.rg_name
+location = var.location
+storage_account_type = "Standard_LRS"
+create_option = "Empty"
+disk_size_gb = "30"
+}

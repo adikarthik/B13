@@ -1,0 +1,10 @@
+---
+- name: Distribution Demo
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+
+    - name: Display distribution
+      debug:
+        msg: "Distribution is {{ ansible_distribution }}"

@@ -21,9 +21,3 @@ resource "azurerm_postgresql_flexible_server" "postgres" {
 
   version = "16"
 }
-resource "azurerm_mssql_database" "db" {
-
-  name      = "EmployeeDB"
-
-  server_id = azurerm_mssql_server.sqlserver.id
-}

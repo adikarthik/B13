@@ -1,0 +1,42 @@
+# Terraform working directory
+.terraform/
+
+# Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Crash logs
+crash.log
+
+# Terraform plan files
+*.tfplan
+*.plan
+
+# Sensitive variable files
+terraform.tfvars
+*.auto.tfvars
+
+# Override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI configuration
+.terraformrc
+terraform.rc
+
+# Lock file (optional)
+.terraform.lock.hcl
+
+# SSH Keys
+*.pem
+*.ppk
+id_rsa
+id_rsa.pub
+
+# VS Code
+.vscode/
+
+# IntelliJ
+.idea/

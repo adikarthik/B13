@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(
+            name: 'BRANCH',
+            defaultValue: 'master'
+        )
+    }
+
+    stages {
+
+        stage('Deploy') {
+
+            when {
+                expression {
+                    params.BRANCH == 'master'
+                }
+            }
+
+            steps {
+                echo 'Deploying Application'
+            }
+        }
+    }
+}

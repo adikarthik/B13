@@ -4,6 +4,10 @@ location = "centralindia"
 }
 
 
+import {
+to = azurerm_resource_group.rg
+id = "/subscriptions/c289de48-183f-4c13-88c7-412dedacf9ed/resourceGroups/my_rg"
+}
 
 resource "azurerm_virtual_network" "vnet" {
 resource_group_name = var.rg_name
@@ -13,10 +17,17 @@ address_space = var.address_space
 }
 
 
-
 resource "azurerm_subnet" "subnet" {
 name = var.subnet_name
 resource_group_name = var.rg_name
 virtual_network_name = var.vnet_name
 address_prefixes = var.address_prefixes
+}
+
+resource "azurerm_storage_account" "sa" {
+name = "skgousia2026"
+resource_group_name = var.rg_name
+location = var.location
+account_tier = "Standard"
+account_replication_type = "LRS"
 }

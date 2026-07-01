@@ -2,8 +2,8 @@
 
 JENKINS_URL="http://localhost:8080"
 JOB_NAME="GitMultiBranchRepo"
-USER="admin"
-PASSWORD="admin"
+USER="$USER"
+PASSWORD="$PASS"
 
 BRANCH=("main" "IB-2080_Login_changes" "IB-9211_Payment_render" "feature_A")
 

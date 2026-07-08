@@ -1,0 +1,2 @@
+[webservers]
+vm1 ansible_host=98.70.30.75 ansible_user=azureuser ansible_private_key_file=/home/vicky/documents/Jenkins-VM_key.pem

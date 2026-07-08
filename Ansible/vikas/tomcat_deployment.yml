@@ -1,0 +1,59 @@
+---
+- name: Deploy Application on Tomcat
+  hosts: all
+  become: yes
+
+  vars:
+    java_version: openjdk-21-jdk
+    tomcat_url: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.107/bin/apache-tomcat-9.0.107.tar.gz
+    tomcat_home: /opt/apache-tomcat-9.0.107
+
+  tasks:
+
+    - name: Install Java
+      apt:
+        name: "{{ java_version }}"
+        state: present
+        update_cache: yes
+      tags:
+        - install
+
+    - name: Download Tomcat
+      get_url:
+        url: "{{ tomcat_url }}"
+        dest: /tmp/tomcat.tar.gz
+      tags:
+        - download
+
+    - name: Extract Tomcat
+      unarchive:
+        src: /tmp/tomcat.tar.gz
+        dest: /opt
+        remote_src: yes
+      tags:
+        - extract
+
+    - name: Copy WAR file
+      copy:
+        src: Amazon.war
+        dest: "{{ tomcat_home }}/webapps/"
+      notify: Restart Tomcat
+      tags:
+        - deploy
+
+    - name: Start Tomcat
+      shell: "{{ tomcat_home }}/bin/startup.sh"
+      args:
+        executable: /bin/bash
+      tags:
+        - start
+
+  handlers:
+
+    - name: Restart Tomcat
+      shell: |
+        {{ tomcat_home }}/bin/shutdown.sh || true
+        sleep 5
+        {{ tomcat_home }}/bin/startup.sh
+      args:
+        executable: /bin/bash

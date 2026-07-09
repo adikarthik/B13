@@ -1,0 +1,55 @@
+---
+- name: Install and Configure Nginx
+  hosts: all
+  become: yes
+
+  vars:
+    nginx_package: nginx
+    nginx_service: nginx
+    web_root: /var/www/html
+
+  tasks:
+
+    - name: Install Nginx
+      apt:
+        name: "{{ nginx_package }}"
+        state: present
+        update_cache: yes
+      tags:
+        - install
+
+    - name: Copy Home Page
+      copy:
+        src: index.html
+        dest: "{{ web_root }}/index.html"
+      notify: Restart Nginx
+      tags:
+        - configure
+
+    - name: Start Nginx
+      service:
+        name: "{{ nginx_service }}"
+        state: started
+        enabled: yes
+      tags:
+        - service
+
+    - name: Check Nginx Status
+      command: systemctl is-active nginx
+      register: nginx_status
+      changed_when: false
+      tags:
+        - verify
+
+    - name: Display Status
+      debug:
+        var: nginx_status.stdout
+      tags:
+        - verify
+
+  handlers:
+
+    - name: Restart Nginx
+      service:
+        name: "{{ nginx_service }}"
+        state: restarted

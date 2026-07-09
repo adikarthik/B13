@@ -1,0 +1,8 @@
+---
+- name: Create file using shell
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Create file
+      shell: touch /Users/jayashree/ansible-tpractice/abc.txt

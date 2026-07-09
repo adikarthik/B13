@@ -1,0 +1,28 @@
+---
+- name: Demonstrate Handlers and Notify
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Install Apache2
+      apt:
+        name: apache2
+        state: present
+        update_cache: yes
+      notify:
+        - Restart Apache
+
+    - name: Copy index file
+      copy:
+        content: "Welcome to Ansible Handler Demo"
+        dest: /var/www/html/index.html
+      notify:
+        - Restart Apache
+
+  handlers:
+
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted

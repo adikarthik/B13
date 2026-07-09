@@ -1,0 +1,24 @@
+---
+- name: Demo --skip-tags usage
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+
+    - name: Install Java
+      debug:
+        msg: "Installing Java"
+      tags:
+        - java
+
+    - name: Install Tomcat
+      debug:
+        msg: "Installing Tomcat"
+      tags:
+        - tomcat
+
+    - name: Deploy App
+      debug:
+        msg: "Deploying application"
+      tags:
+        - deploy

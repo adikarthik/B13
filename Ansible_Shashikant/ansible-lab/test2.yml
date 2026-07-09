@@ -1,0 +1,13 @@
+---
+- name: Check Same Variable Precedence
+  hosts: all
+
+  vars:
+    java_version: openjdk-17-jdk
+    java_version: openjdk-21-jdk
+
+  tasks:
+
+    - name: Display Java Version
+      debug:
+        msg: "Java Version is {{ java_version }}"

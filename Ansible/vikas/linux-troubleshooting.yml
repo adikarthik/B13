@@ -1,0 +1,73 @@
+---
+- name: Linux VM Troubleshooting
+  hosts: all
+  become: yes
+
+  vars:
+    log_file: /var/log/messages
+
+  tasks:
+
+    - name: Check Hostname
+      command: hostname
+      register: hostname
+      changed_when: false
+
+    - name: Check Uptime
+      command: uptime
+      register: uptime
+      changed_when: false
+
+    - name: Check Disk Usage
+      command: df -h
+      register: disk
+      changed_when: false
+
+    - name: Check Memory Usage
+      command: free -h
+      register: memory
+      changed_when: false
+
+    - name: Check CPU Load
+      shell: top -bn1 | head -5
+      register: cpu
+      changed_when: false
+
+    - name: Check Running Processes
+      shell: ps -ef | head
+      register: process
+      changed_when: false
+
+    - name: Check Network Interfaces
+      command: ip addr
+      register: network
+      changed_when: false
+
+    - name: Check Mounted Filesystems
+      command: mount
+      register: mount
+      changed_when: false
+
+    - name: Check Recent System Logs
+      shell: tail -10 {{ log_file }}
+      register: logs
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Display Results
+      debug:
+        msg:
+          - "Hostname: {{ hostname.stdout }}"
+          - "Uptime: {{ uptime.stdout }}"
+          - "Disk Usage:"
+          - "{{ disk.stdout_lines }}"
+          - "Memory Usage:"
+          - "{{ memory.stdout_lines }}"
+          - "CPU:"
+          - "{{ cpu.stdout_lines }}"
+          - "Processes:"
+          - "{{ process.stdout_lines }}"
+          - "Network:"
+          - "{{ network.stdout_lines }}"
+          - "Logs:"
+          - "{{ logs.stdout_lines }}"

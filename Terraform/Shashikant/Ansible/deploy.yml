@@ -1,0 +1,9 @@
+---
+- name: Deploy WAR File
+  hosts: slave
+
+  tasks:
+    - name: Copy amazon.war to slave
+      copy:
+        src: /home/azureuser/amazon.war
+        dest: /home/azureuser/amazon.war

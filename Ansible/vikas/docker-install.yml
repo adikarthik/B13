@@ -1,0 +1,50 @@
+---
+- name: Install Docker and Run Container
+  hosts: all
+  become: yes
+
+  vars:
+    docker_package: docker.io
+    container_name: nginx-container
+    image_name: nginx
+
+  tasks:
+
+    - name: Install Docker
+      apt:
+        name: "{{ docker_package }}"
+        state: present
+        update_cache: yes
+      tags:
+        - install
+
+    - name: Start Docker Service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      tags:
+        - service
+
+    - name: Pull Nginx Image
+      command: docker pull {{ image_name }}
+      register: image_pull
+      changed_when: "'Downloaded newer image' in image_pull.stdout or 'Status: Downloaded' in image_pull.stdout"
+      tags:
+        - image
+
+    - name: Run Nginx Container
+      command: >
+        docker run -d --name {{ container_name }} -p 80:80 {{ image_name }}
+      register: container_output
+      when: image_pull.rc == 0
+      ignore_errors: yes
+      tags:
+        - container
+
+    - name: Display Container ID
+      debug:
+        var: container_output.stdout
+      when: container_output is defined
+      tags:
+        - verify

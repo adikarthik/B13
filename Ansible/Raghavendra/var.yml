@@ -1,0 +1,4 @@
+var file
+	  java_version: openjdk-11-jdk
+tomcat_url: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.58/bin/apache-tomcat-9.0.58.tar.gz
+war_file: /home/raghavendra/Desktop/Amazon/Amazon/Amazon-Web/target/Amazon.war

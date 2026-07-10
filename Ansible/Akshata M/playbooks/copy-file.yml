@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Copy file
+      copy:
+        src: /etc/hosts
+        dest: /tmp/hosts

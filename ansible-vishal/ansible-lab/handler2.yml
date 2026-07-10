@@ -1,0 +1,20 @@
+---
+- name: Demo Handler Failure
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Create sample file
+      copy:
+        content: "Testing Handlers"
+        dest: /tmp/test.txt
+      notify:
+        - Restart Wrong Service
+
+  handlers:
+
+    - name: Restart Wrong Service
+      service:
+        name: wrongservice
+        state: restarted

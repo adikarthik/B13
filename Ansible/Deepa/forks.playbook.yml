@@ -1,0 +1,13 @@
+---
+- name: Demonstrate Forks
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Check hostname
+      command: hostname
+      register: output
+
+    - name: Display hostname
+      debug:
+        var: output.stdout

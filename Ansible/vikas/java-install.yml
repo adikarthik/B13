@@ -1,0 +1,24 @@
+---
+- name: Install Java
+  hosts: all
+  become: yes
+
+  vars:
+    java_package: openjdk-21-jdk
+
+  tasks:
+
+    - name: Install Java
+      apt:
+        name: "{{ java_package }}"
+        state: present
+        update_cache: yes
+
+    - name: Check Java Version
+      command: java -version
+      register: java_version
+      changed_when: false
+
+    - name: Display Java Version
+      debug:
+        var: java_version.stderr_lines

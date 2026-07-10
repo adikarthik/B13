@@ -1,0 +1,14 @@
+---
+- name: Install packages
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install packages
+      apt:
+        name:
+          - git
+          - curl
+          - wget
+          - unzip
+        state: present

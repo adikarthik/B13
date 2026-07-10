@@ -1,0 +1,25 @@
+---
+- name: Demonstrate handlers and notify
+  hosts: localhost
+  become: yes
+  gather_facts: no
+
+  tasks:
+
+    - name: Install Apache (simulate)
+      debug:
+        msg: "Apache installed"
+      changed_when: true
+      notify: restart apache
+
+    - name: Copy configuration file
+      copy:
+        content: "Listen 8080"
+        dest: /tmp/httpd.conf
+      notify: restart apache
+
+  handlers:
+
+    - name: restart apache
+      debug:
+        msg: "Apache service restarted"

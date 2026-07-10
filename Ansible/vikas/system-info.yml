@@ -1,0 +1,33 @@
+---
+- name: Collect System Information
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Get Hostname
+      command: hostname
+      register: hostname
+      changed_when: false
+
+    - name: Get Uptime
+      command: uptime
+      register: uptime
+      changed_when: false
+
+    - name: Get Memory Usage
+      shell: free -h
+      register: memory
+      changed_when: false
+
+    - name: Display Hostname
+      debug:
+        var: hostname.stdout
+
+    - name: Display Uptime
+      debug:
+        var: uptime.stdout
+
+    - name: Display Memory
+      debug:
+        var: memory.stdout_lines

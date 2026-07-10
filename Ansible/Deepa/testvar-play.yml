@@ -1,0 +1,16 @@
+---
+- name: Variable Precedence Demo
+  hosts: localhost
+  connection: local
+
+  vars_files:
+    - vars.yml
+
+  vars:
+    java_version: openjdk-17-jdk
+
+  tasks:
+
+    - name: Display Java Version
+      debug:
+        msg: "Java Version is {{ java_version }}"

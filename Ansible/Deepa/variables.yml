@@ -1,0 +1,3 @@
+java_version: openjdk-21
+tomcat_dir: /opt/tomcat
+tomcat_user: tomcat

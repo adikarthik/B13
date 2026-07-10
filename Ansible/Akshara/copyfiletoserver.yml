@@ -1,0 +1,13 @@
+---
+- name: Copy file
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Copy configuration file
+      copy:
+        src: test.txt
+        dest: /tmp/test.txt
+        owner: root
+        group: root
+        mode: '0644'

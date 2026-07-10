@@ -1,0 +1,19 @@
+- hosts: localhost
+  connection: local
+  tasks:
+
+    - name: Install Java
+      command: echo "Installing Java"
+      tags:
+        - java
+
+    - name: Restart Tomcat
+      command: echo "Tomcat Restarted"
+      tags:
+        - never
+        - restart
+
+    - name: Gather Hostname
+      command: hostname
+      tags:
+        - always

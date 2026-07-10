@@ -1,6 +1,6 @@
-
-B
-data "azurerm_resource_group" "rg" {
-  name = "cli_grp"
+resource azurerm_resource_group "rg"{
+name=
+location=
 }
+
 

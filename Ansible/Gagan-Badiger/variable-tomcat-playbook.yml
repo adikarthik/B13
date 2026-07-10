@@ -1,0 +1,37 @@
+---
+- name: Install Java, download the tomcat, copy Amazon.war and start the tomcat.
+  hosts: client_servers
+  become: true
+  vars:
+    java_package: openjdk-11-jdk
+    tomcat_URL: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.85/bin/apache-tomcat-9.0.85.tar.gz
+  tasks:
+    - name: installing java
+      apt:
+        name: "{{ java_package }}"
+        state: present
+        update_cache: true
+    - name: creating tomcat directory
+      file:
+        path: /opt/tomcat
+        state: directory
+        mode: "0755"
+    - name: downloading tomcat
+      shell: wget "{{ tomcat_URL }}" -0/tmp/apache-toncat.tar.gz
+    - name: extracting the tomcat
+      unarchive:
+        src: /tmp/apache-tomcat.tar.gz
+        dest: /opt/tomcat
+        remote_src: true
+        extra_opts: --strip-components=1
+    - name: giving execute permission to tomcat
+      file:
+        path: /opt/tomcat/bin/startup.sh
+        mode: "0755"
+    - name: copy the Amazon.war file
+      copy:
+        src: Amazon.war
+        dest: /opt/tomcat/webapps/Amazon.war
+        mode: "0644"
+    - name: starting tomcat
+      shell: /opt/tomcat/bin/startup.sh

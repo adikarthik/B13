@@ -1,0 +1,14 @@
+---
+- name: Vault Demo
+  hosts: localhost
+  vars_files:
+    - secrets.yml
+
+  tasks:
+    - name: Print DB User
+      debug:
+        msg: "DB User is {{ db_user }}"
+
+    - name: Print DB Password
+      debug:
+        msg: "DB Password is {{ db_password }}"

@@ -1,0 +1,57 @@
+---
+- name: Install Java, Deploy Tomcat and Amazon Application
+  hosts: all
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+
+    - name: Install Java
+      apt:
+        name: openjdk-17-jdk
+        state: present
+        update_cache: yes
+      tags:
+        - java
+
+    - name: Download Apache Tomcat
+      get_url:
+        url: https://archive.apache.org/dist/tomcat/tomcat-9/v{{ tomcat_version }}/bin/{{ tomcat_tar }}
+        dest: /tmp/{{ tomcat_tar }}
+      tags:
+        - tomcat
+
+    - name: Create Tomcat base directory
+      file:
+        path: "{{ tomcat_home }}"
+        state: directory
+      tags:
+        - tomcat
+
+    - name: Extract Tomcat archive
+      unarchive:
+        src: /tmp/{{ tomcat_tar }}
+        dest: "{{ tomcat_home }}"
+        remote_src: yes
+      tags:
+        - tomcat
+
+    - name: Deploy Amazon WAR file
+      copy:
+        src: files/Amazon.war
+        dest: "{{ tomcat_home }}/apache-tomcat-{{ tomcat_version }}/webapps/Amazon.war"
+      tags:
+        - deploy
+
+    - name: Start Tomcat
+      shell: "{{ tomcat_home }}/apache-tomcat-{{ tomcat_version }}/bin/startup.sh"
+      tags:
+        - service
+
+    - name: Display mandatory message
+      debug:
+        msg: "This task always runs"
+      tags:
+        - always

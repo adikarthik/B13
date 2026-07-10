@@ -1,0 +1,19 @@
+#SPDX-License-Identifier: MIT-0
+# tasks file for tomcat
+---
+- name: Install Java
+  apt:
+    name: openjdk-17-jdk
+    state: present
+    update_cache: yes
+
+- name: Install Tomcat
+  apt:
+    name: tomcat10
+    state: present
+
+- name: Start Tomcat Service
+  service:
+    name: tomcat10
+    state: started
+    enabled: yes

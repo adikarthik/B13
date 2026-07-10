@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Terraform Init') {
+            steps {
+                dir('Terraform/Deepa/Terraform/Terraform-Jenkins') {
+                    sh 'terraform init'
+                }
+            }
+        }
+
+        stage('Terraform Validate') {
+            steps {
+                dir('Terraform/Deepa/Terraform/Terraform-Jenkins') {
+                    sh 'terraform validate'
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                dir('Terraform/Deepa/Terraform/Terraform-Jenkins') {
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                dir('Terraform/Deepa/Terraform/Terraform-Jenkins') {
+                    sh 'terraform apply -auto-approve'
+                }
+            }
+        }
+    }
+}

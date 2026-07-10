@@ -1,0 +1,10 @@
+---
+- name: Kernel Demo
+  hosts: all
+  gather_facts: yes
+
+  tasks:
+
+    - name: Display kernel version
+      debug:
+        msg: "Kernel Version is {{ ansible_kernel }}"

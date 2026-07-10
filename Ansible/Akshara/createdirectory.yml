@@ -1,0 +1,11 @@
+---
+- name: Create directory
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Create application directory
+      file:
+        path: /opt/myapp
+        state: directory
+        mode: '0755'

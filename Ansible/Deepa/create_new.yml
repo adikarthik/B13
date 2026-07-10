@@ -1,0 +1,13 @@
+---
+- name: Create a new user
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Create a user
+      user:
+        name: man
+        home: /home/deepa/test
+        create_home: yes
+        shell: /bin/bash
+        state: present

@@ -1,0 +1,180 @@
+---
+- name: Install Java and Tomcat
+  hosts: devvm1
+  become: true
+
+  tasks:
+
+    - name: Install Java
+      apt:
+        name: openjdk-17-jdk
+        state: present
+        update_cache: yes
+
+    - name: Create Tomcat directory
+      file:
+        path: /opt/tomcat
+        state: directory
+        mode: '0755'
+
+    - name: Download Tomcat
+      shell: |
+        curl -L -o /tmp/tomcat.tar.gz https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.80/bin/apache-tomcat-9.0.80.tar.gz
+
+    - name: Extract Tomcat
+      unarchive:
+        src: /tmp/tomcat.tar.gz
+        dest: /opt/tomcat
+        remote_src: yes
+
+    - name: Download Sample WAR File
+      shell: |
+        curl -L -o /opt/tomcat/apache-tomcat-9.0.80/webapps/sample.war https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war
+
+    - name: Start Tomcat
+      shell: |
+        /opt/tomcat/apache-tomcat-9.0.80/bin/startup.sh
+
+    - name: Wait for Tomcat to start
+      wait_for:
+        port: 8080
+        delay: 10
+        timeout: 60
+
+    - name: Verify Tomcat
+      uri:
+        url: http://localhost:8080
+        status_code: 200
+
+
+
+
+
+
+
+
+
+
+
+
+    
+     
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+  
+
+
+
+
+
+
+
+
+
+
+       
+
+
+
+
+
+           
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

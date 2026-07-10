@@ -1,0 +1,16 @@
+---
+- name: Demo become_method sudo
+  hosts: webservers
+  become: yes
+  become_method: sudo
+  become_user: root
+
+  tasks:
+    - name: Check current user
+      command: whoami
+      register: output
+
+    - name: Display user
+      debug:
+        var: output.stdout
+

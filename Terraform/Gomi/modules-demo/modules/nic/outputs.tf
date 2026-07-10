@@ -1,5 +1,6 @@
 output "nic_id" {
-value = azurerm_virtual_network.nic23.id
+value = azurerm_network_interface.nic-mod.id
+
 description = "the resource id of the created nic "
 }
 

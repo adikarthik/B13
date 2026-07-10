@@ -1,8 +1,8 @@
 resource "azurerm_virtual_machine" "vm-gom-module" {
-name = var.vm_values.vm_name
+name = var.vm_values.name
 location = var.vm_values.location 
-resource_ group_name = var.vm_values.rg_name
-network_interface_ids = var.vm_values.nic_id
+resource_group_name = var.vm_values.rg_name
+network_interface_ids =[ var.vm_values.nic_id]
 vm_size = var.vm_values.vm_size
 
 storage_os_disk {
@@ -27,7 +27,7 @@ admin_password = var.vm_values.profile.password
 }
 
 os_profile_linux_config {
-disable_passwrod_authentication = var.vm_values.user_access.access
+disable_password_authentication = var.vm_values.user_access.access
 }
 
 }

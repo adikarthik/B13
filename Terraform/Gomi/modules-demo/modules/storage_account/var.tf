@@ -1,4 +1,4 @@
-variabel "storage_values" {
+variable "storage_value" {
 type = object({
 name = string
 location = string
@@ -6,10 +6,10 @@ rg_name = string
 acc_tier = string
 acc_replication = string
 acc_type = string
-access_https = boolean
-tls_vesrion = string
+access_https = string
+tls_version = string
 })
-}
+
 
 
 default = {
@@ -17,8 +17,9 @@ name = "gomi11223344"
 location = "east us"
 rg_name = "applicationrg"
 acc_tier = "Standard"
-acc_repliation = "LRS"
-acc_type = "StorageV2"[
+acc_replication = "LRS"
+acc_type = "BlobStorage"
 access_https = true
-tls_version = "LTS_2"
+tls_version = "TLS1_2"
+}
 }

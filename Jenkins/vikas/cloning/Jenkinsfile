@@ -1,0 +1,36 @@
+pipeline {
+    agent {
+        label 'Agent-01'
+    }
+    
+    stages {
+    
+        stage('Checkout') {
+            steps {
+                git branch: 'main', 
+                    url: 'https://github.com/Vikasvicxy/Amazon-Jenkins.git'
+            }    
+        }
+
+        stage('List and Store Info') {
+            steps {
+                sh 'touch README.txt'
+                sh 'ls -l >> README.txt'
+                sh 'pwd >> README.txt'
+                sh 'echo ""Build No: ${BUILD_NUMBER}"" >> README.txt'
+                sh 'echo ""Job Name: ${JOB_NAME}"" >> README.txt'
+                
+                sh 'cat README.txt'
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo 'Clone and listing is successful'
+        }
+        failure {
+            echo 'Script failed to clone'
+        }
+    }
+}

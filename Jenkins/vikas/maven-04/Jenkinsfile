@@ -1,0 +1,78 @@
+"pipeline {
+    agent any
+
+    tools {
+        maven 'Maven-3.8'
+        jdk 'JDK-11'
+    }
+
+    stages {
+
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/PraveenKuberABC/Amazon.git'
+            }
+        }
+
+        // -------- SpringCore --------
+        stage('SpringCore') {
+            steps {
+                dir('SpringCore') {
+                    sh 'mvn clean package -DskipTests'
+                    sh 'mvn test'
+                }
+            }
+            post {
+                always {
+                    junit 'SpringCore/target/surefire-reports/*.xml'
+                    archiveArtifacts 'SpringCore/target/*.jar'
+                }
+            }
+        }
+
+        // -------- Amazon --------
+        stage('Amazon') {
+            steps {
+                dir('Amazon') {
+                    sh 'mvn clean package -DskipTests'
+                    sh 'mvn test'
+                }
+            }
+            post {
+                always {
+                    junit 'Amazon/**/target/surefire-reports/*.xml'
+                    archiveArtifacts 'Amazon/**/target/*.jar, Amazon/**/target/*.war'
+                }
+            }
+        }
+
+        // -------- SKY --------
+        stage('SKY') {
+            steps {
+                dir('SKY') {
+                    sh 'mvn clean package -DskipTests'
+                    sh 'mvn test'
+                }
+            }
+            post {
+                always {
+                    junit 'SKY/**/target/surefire-reports/*.xml'
+                    archiveArtifacts 'SKY/**/target/*.jar, SKY/**/target/*.war'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'All projects built successfully'
+        }
+        failure {
+            echo 'Build failed, check logs'
+        }
+        always {
+            cleanWs()
+        }
+    }
+}"

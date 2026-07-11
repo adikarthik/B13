@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+    stages {
+        stage('Use Credentials Securely') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'e04c5a80-bee5-48d3-a30c-497364f69ad5',
+                        usernameVariable: 'USERNAME',
+                        passwordVariable: 'PASSWORD'
+                    )
+                ]) {
+                    sh '''
+                        echo "Credentials loaded successfully"
+                        if [ -n "$USERNAME" ] && [ -n "$PASSWORD" ]
+                        then
+                            echo "Authentication variables are available."
+                        fi
+                    '''
+                }
+            }
+        }
+    }
+}

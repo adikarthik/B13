@@ -1,0 +1,8 @@
+---
+- name: Test encrypted inventory
+  hosts: webservers
+  gather_facts: false
+
+  tasks:
+    - debug:
+        msg: "Inventory is working"

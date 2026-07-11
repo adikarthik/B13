@@ -1,48 +1,80 @@
-resource "azurerm_resource_group" "rg2" {
+module "rg3" {
+  source = "./modules/resource_group"
 
-  name     = var.rg-name
-  location = var.rg-location
-
+  name     = "gomiapprg"
+  location = "east us"
 }
 
-resource "azurerm_network_security_group" "nsgap" {
 
-  name                = var.nsg
-  location            = azurerm_resource_group.rg2.location
-  resource_group_name = azurerm_resource_group.rg2.name
+module "nicmod" {
 
-}
+  source = "./modules/nic"
 
-resource "azurerm_virtual_network" "vnet-app" {
+  vm_params = {
 
-  name                = var.vnet.name
-  location            = azurerm_resource_group.rg2.location
-  resource_group_name = azurerm_resource_group.rg2.name
-  address_space       = [var.vnet.address_space[0]]
+    vm_name     = "gominic"
+    vm_location = module.rg3.rg_location
+    rg_name     = module.rg3.rg_name
 
-}
-
-resource "azurerm_subnet" "subnets" {
-
-  for_each = var.subnets
-
-  name                 = each.value.name
-  virtual_network_name = azurerm_virtual_network.vnet-app.name
-  resource_group_name  = azurerm_resource_group.rg2.name
-  address_prefixes     = each.value.address_prefixes
-
-}
-
-resource "azurerm_network_interface" "nicapp" {
-
-  name                = var.nic.name
-  location            = azurerm_resource_group.rg2.location
-  resource_group_name = azurerm_resource_group.rg2.name
-
-  ip_configuration {
-    name                          = var.nic.ip_config_name
-    subnet_id                     = azurerm_subnet.subnets["subnet1"].id
-    private_ip_address_allocation = var.nic.private_ip_allocation
+ip_configuration = {
+      name                          = "internal"
+      subnet_id                     = "/subscriptions/a81a1fbd-7f56-4047-86f4-5e06793d5ca9/resourceGroups/applicationgrp/providers/Microsoft.Network/virtualNetworks/vnet-app/subnets/subnet1"
+      private_ip_address_allocation = "Dynamic"
+    }
 
   }
 }
+
+module "gomi-storage-module" {
+
+source = "./modules/storage_account"
+
+  storage_value = {
+name = "gomstoragemodule"
+location = module.rg3.rg_location
+rg_name = module.rg3.rg_name
+acc_tier = "Standard"
+acc_replication = "LRS"
+acc_type = "BlobStorage"
+access_https = true
+tls_version = "TLS1_2"
+}
+}
+
+module "vm-gom-module" {
+source = "./modules/virtual_machine"
+
+ vm_values = {
+name = "vm-new-mod"
+location = module.rg3.rg_location
+rg_name = module.rg3.rg_name
+nic_id = module.nicmod.nic_id
+vm_size = "Standard_B2S"
+
+storage = {
+name = "vm-gom-mod-os_disk"
+create_option = "FromImage"
+disk_type = "Standard_LRS"
+caching = "ReadWrite"
+}
+
+image= {
+publisher = "Canonical"
+offer = "0001-com-ubuntu-server-jammy"
+sku = "22_04-lts"
+version = "latest"
+}
+
+profile = {
+cp_name = "vm-gom-mod"
+username = "gomiadmin"
+password = "anniyan@21"
+}
+
+user_access ={
+access = "false"
+}
+
+}
+}
+

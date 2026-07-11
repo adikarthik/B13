@@ -1,0 +1,17 @@
+---
+- name: Demo ansible_system
+  hosts: all
+  gather_facts: yes
+  become:  yes
+
+  tasks:
+
+    - name: Display operating system
+      debug:
+        msg: "Operating System is {{ ansible_system }}"
+
+    - name: Install Git on Linux
+      apt:
+        name: git
+        state: present
+      when: ansible_system == "Linux"

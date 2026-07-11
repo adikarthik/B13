@@ -1,0 +1,48 @@
+pipeline {
+    agent { label 'windows-agent' }
+
+    environment {
+        git_branch = 'main'
+        git_url = 'https://github.com/shashimaski/Amazon-Jenkins'
+    }
+
+    stages {
+
+        stage('Clone Code (CI)') {
+            steps {
+                git branch: "${env.git_branch}", url: "${env.git_url}"
+            }
+        }
+
+        stage('Build (CI)') {
+            steps {
+                bat 'echo Building project > build.txt'
+            }
+        }
+
+        stage('Test (CI)') {
+            steps {
+                bat 'echo Tests passed >> build.txt'
+            }
+        }
+
+        stage('Deploy (CD)') {
+            steps {
+                bat '''
+                echo Deploying to Amazon folder...
+                copy build.txt D:\\slave\\workspace\\Amazon\\build.txt
+                dir D:\\slave\\workspace\\Amazon
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'CI/CD Pipeline executed SUCCESSFULLY'
+        }
+        failure {
+            echo 'CI/CD Pipeline FAILED'
+        }
+    }
+}

@@ -1,0 +1,48 @@
+---
+- name: Generate Linux Health Report
+  hosts: all
+  become: yes
+
+  vars:
+    report_file: /tmp/linux-health-report.txt
+
+  tasks:
+
+    - name: Check Disk Usage
+      shell: df -h
+      register: disk
+
+    - name: Check Memory
+      shell: free -h
+      register: memory
+
+    - name: Check CPU Load
+      shell: uptime
+      register: cpu
+
+    - name: Check Logged Users
+      shell: who
+      register: users
+
+    - name: Create Health Report
+      copy:
+        content: |
+          Linux Health Report
+
+          Disk Usage:
+          {{ disk.stdout }}
+
+          Memory:
+          {{ memory.stdout }}
+
+          CPU Load:
+          {{ cpu.stdout }}
+
+          Logged Users:
+          {{ users.stdout }}
+
+        dest: "{{ report_file }}"
+
+    - name: Display Report Location
+      debug:
+        msg: "Health report created at {{ report_file }}"

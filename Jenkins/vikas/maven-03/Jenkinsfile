@@ -1,0 +1,57 @@
+pipeline {
+ agent any
+ options {
+     timeout(time: 1, unit:'MINUTES')
+ }
+ triggers {
+     pollSCM('* * * * *')
+ }
+ stages {
+     
+     stage('Checkout') {
+         steps {
+           git credentialsId: 'git-creds',
+            branch: 'main',
+             url: 'https://github.com/Vikasvicxy/Amazon-Jenkins.git'
+     }
+ }
+ stage('build') {
+     steps {
+         echo 'Build process started'
+         sh 'mvn clean compile'
+         }
+     }
+     stage('test') {
+         steps {
+             retry (10) {
+             echo 'Test process has started'
+             sh 'mvn test'
+         }
+     }
+     }
+     stage('package') {
+         steps {
+            echo 'packaging has been started'
+            sh 'mvn package'
+     }
+  }
+  } 
+ 
+  post {
+    
+     success {
+        mail to: 'mvik.143.007@gmail.com',
+        subject: "Build no : ${BUILD_NUMBER} has been built successfully",
+        body: "The Built has been succesfully Built and the job name is ${JOB_NAME} Location path is ${WORKSPACE}"
+     }
+     failure {
+         mail to:'mvik.143.007@gmail.com',
+         subject:"Build number : ${BUILD_NUMBER} has been failed",
+         body: "Job name : ${JOB_NAME} has been failed in ${WORKSPACE}"
+     }
+     
+     always {
+         cleanWs()
+     }
+  }
+  }

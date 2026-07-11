@@ -1,0 +1,24 @@
+---
+- name: Demo always tag
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+
+    - name: Install Java
+      debug:
+        msg: "Installing Java"
+      tags:
+        - java
+
+    - name: Install Tomcat
+      debug:
+        msg: "Installing Tomcat"
+      tags:
+        - tomcat
+
+    - name: Logging Task
+      debug:
+        msg: "This runs always"
+      tags:
+        - always

@@ -1,0 +1,20 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Send Slack Notification') {
+            steps {
+                script {
+                    def slackWebhookUrl = 'SLACK_WEBHOOK_URL="YOUR_SLACK_WEBHOOK_URL"'
+                    def message = '{"text": "Test message from Jenkins"}'
+
+                    sh """
+                        curl -X POST -H "Content-type: application/json" \
+                        --data '${message}' \
+                        ${slackWebhookUrl}
+                    """
+                }
+            }
+        }
+    }
+}

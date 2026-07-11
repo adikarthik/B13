@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    environment {
+        git_branch = 'main'
+        git_url = 'https://github.com/shashimaski/Amazon-Jenkins'
+    }
+
+    stages {
+
+        stage('Clone Repo') {
+            steps {
+                git branch: "${env.git_branch}", url: "${env.git_url}"
+            }
+        }
+
+        stage('Build Amazon Project') {
+            steps {
+                dir('Amazon') {
+                    sh 'echo Building Amazon project'
+                }
+            }
+        }
+
+        stage('Build SKY Project') {
+            steps {
+                dir('SKY') {
+                    sh 'echo Building SKY project'
+                }
+            }
+        }
+
+        stage('Build SpringCore Project') {
+            steps {
+                dir('SpringCore') {
+                    sh 'echo Building SpringCore project'
+                }
+            }
+        }
+    }
+}

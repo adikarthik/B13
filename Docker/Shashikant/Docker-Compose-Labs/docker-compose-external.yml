@@ -1,0 +1,19 @@
+version: "2.3"
+
+services:
+  tomcat1:
+    image: tomcat:9.0
+    ports:
+      - "8092:8080"
+    volumes:
+      - extvolume:/home
+    networks:
+      - extnetwork
+
+volumes:
+  extvolume:
+    external: true
+
+networks:
+  extnetwork:
+    external: true

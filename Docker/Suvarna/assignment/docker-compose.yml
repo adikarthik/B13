@@ -1,0 +1,14 @@
+services:
+  amazon:
+    build:
+      context: ./amazon
+    container_name: amazon-container
+    ports:
+      - "8080:8080"
+
+  springboot:
+    build:
+      context: ./springboot
+    container_name: springboot-container
+    ports:
+      - "8081:8080"

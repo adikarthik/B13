@@ -1,4 +1,4 @@
-variables "vm_values" {
+variable "vm_values" {
  type = object ({
 
 name = string
@@ -24,7 +24,7 @@ version = string
 profile = object({
 cp_name = string
 username = string
-password = stirng
+password = string
 })
 
 user_access = object({
@@ -33,10 +33,10 @@ access = string
 
 })
 
-}
 
 
-defaults = {
+
+default = {
 name = "gomi-vm-mod"
 location = "east us"
 rg_name = "rg-modules"
@@ -46,13 +46,13 @@ vm_size = "standard_B2s"
 storage ={
 name = "gomi-vm-mod-osdisk"
 create_option = "FromImage"
-disk_tyoe = "Standard_LRS"
+disk_type = "Standard_LRS"
 caching = "ReadWrite"
 }
 
 image = {
-publisher = "Canobical"
-offer = "001-com-ubuntu-server-jammu"
+publisher = "Canonical"
+offer = "001-com-ubuntu-server-jammy"
 sku = "22_04-lts"
 version = "latest"
 }
@@ -60,8 +60,10 @@ version = "latest"
 profile = {
 cp_name = "gom-vm-mod"
 username = "gomiadmin"
-passwrod = "p@ssword2123"
+password = "p@ssword2123"
 }
-user_acces = {
+user_access = {
 access = "false"
+}
+}
 }

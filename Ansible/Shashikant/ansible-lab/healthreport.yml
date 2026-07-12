@@ -1,0 +1,102 @@
+---
+- name: Linux VM Troubleshooting Playbook
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Get hostname
+      command: hostname
+      register: hostname_output
+
+    - name: Get uptime
+      command: uptime
+      register: uptime_output
+
+    - name: Check disk usage
+      command: df -h
+      register: disk_output
+
+    - name: Check memory usage
+      command: free -m
+      register: memory_output
+
+    - name: Check CPU load
+      shell: top -bn1 | head -5
+      register: cpu_output
+
+    - name: Check logged-in users
+      command: who
+      register: users_output
+
+    - name: Check running processes
+      shell: ps -ef | head -20
+      register: process_output
+
+    - name: Check listening ports
+      shell: ss -tulnp
+      register: ports_output
+
+    - name: Check recent system errors
+      shell: journalctl -p err -n 20 --no-pager
+      register: errors_output
+      ignore_errors: yes
+
+    - name: Check filesystem inode usage
+      command: df -i
+      register: inode_output
+
+    - name: Display troubleshooting report
+      debug:
+        msg:
+          - "Hostname: {{ hostname_output.stdout }}"
+          - "Uptime: {{ uptime_output.stdout }}"
+          - "Disk Usage: {{ disk_output.stdout_lines }}"
+          - "Memory Usage: {{ memory_output.stdout_lines }}"
+          - "CPU Details: {{ cpu_output.stdout_lines }}"
+          - "Logged Users: {{ users_output.stdout_lines }}"
+          - "Processes: {{ process_output.stdout_lines }}"
+          - "Listening Ports: {{ ports_output.stdout_lines }}"
+          - "Errors: {{ errors_output.stdout_lines }}"
+          - "Inode Usage: {{ inode_output.stdout_lines }}"
+
+    - name: Save troubleshooting report to file
+      copy:
+        content: |
+          =====================================
+          Linux VM Troubleshooting Report
+          =====================================
+
+          Hostname:
+          {{ hostname_output.stdout }}
+
+          Uptime:
+          {{ uptime_output.stdout }}
+
+          Disk Usage:
+          {{ disk_output.stdout }}
+
+          Memory Usage:
+          {{ memory_output.stdout }}
+
+          CPU Details:
+          {{ cpu_output.stdout }}
+
+          Logged-in Users:
+          {{ users_output.stdout }}
+
+          Running Processes:
+          {{ process_output.stdout }}
+
+          Listening Ports:
+          {{ ports_output.stdout }}
+
+          Recent Errors:
+          {{ errors_output.stdout }}
+
+          Inode Usage:
+          {{ inode_output.stdout }}
+
+        dest: "/tmp/{{ inventory_hostname }}_report.txt"
+      delegate_to: localhost
+

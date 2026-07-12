@@ -1,0 +1,10 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Tomcat package
+      apt:
+        name: tomcat9
+        state: present
+        update_cache: yes

@@ -1,0 +1,22 @@
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage('Check Time') {
+
+            steps {
+
+                sh '''
+                    echo "Current Linux Time:"
+                    date
+
+                    echo ""
+                    echo "Current Timezone:"
+                    timedatectl | grep "Time zone"
+                '''
+            }
+        }
+    }
+}

@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+
+    environment {
+        git_branch = 'main'
+        git_url = 'https://github.com/shashimaski/Amazon-Jenkins'
+    }
+
+    stages {
+
+        stage('Clone Project') {
+            steps {
+                git branch: "${env.git_branch}", url: "${env.git_url}"
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'echo Build stage running'
+            }
+        }
+    }
+}

@@ -1,0 +1,30 @@
+// Added feature 2
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh '''
+                echo "Stopping Tomcat"
+                /opt/tomcat/bin/shutdown.sh || true
+
+                sleep 5
+
+                echo "Copy WAR"
+                cp target/*.war /opt/tomcat/webapps/
+
+                echo "Starting Tomcat"
+                /opt/tomcat/bin/startup.sh
+                '''
+            }
+        }
+    }
+}

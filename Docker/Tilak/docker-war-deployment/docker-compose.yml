@@ -1,0 +1,21 @@
+version: '3.2'
+
+services:
+
+
+  amazon-direct:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: amazon-direct-cont
+    ports:
+      - "8081:8080"
+
+
+  amazon-script:
+    build:
+      context: .
+      dockerfile: Dockerfile.script
+    container_name: amazon-script
+    ports:
+      - "8082:8080"

@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  amazon:
+    image: amazon:war01
+    container_name: amazon-v1
+    ports:
+      - "8081:8080"
+
+  appjar:
+    image: springboot:jar01
+    container_name: springboot-v1
+    ports:
+      - "8085:8085"

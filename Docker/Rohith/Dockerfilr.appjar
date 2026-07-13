@@ -1,0 +1,11 @@
+FROM maven:3.8-openjdk-8 AS builder
+WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
+RUN echo "Artifact generated successfully"
+
+FROM eclipse-temurin:8-jre-jammy
+WORKDIR /app
+COPY --from=builder /app/target/devops-demo-0.3.0.jar app.jar
+EXPOSE 8085
+ENTRYPOINT ["java", "-jar", "app.jar"]

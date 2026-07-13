@@ -40,3 +40,4 @@ crash.log
 
 # Optional
 .terraform.lock.hcl
+target/

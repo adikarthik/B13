@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Create File') {
+            steps {
+                sh '''
+                touch temp.txt
+                echo "Temporary File" > temp.txt
+                '''
+            }
+        }
+
+        stage('Run Test') {
+            steps {
+                sh '''
+                if [ -f temp.txt ]
+                then
+                    echo "Test Passed"
+                fi
+                '''
+            }
+        }
+
+    }
+}

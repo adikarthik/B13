@@ -1,0 +1,16 @@
+---
+version: "3.8"
+services:
+  tomcat1:
+    image: tomcat:9.0
+    ports:
+      - 8086:8080
+  tomcat2:
+    image: tomcat:9.0
+    ports:
+      - 8087:8080
+  tomcat3:
+    image: tomcat:9.0
+    ports:
+      - 8088:8080
+

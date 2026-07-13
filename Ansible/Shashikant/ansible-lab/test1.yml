@@ -1,0 +1,16 @@
+---
+- name: Check Variable Precedence
+  hosts: all
+  become: yes
+
+  vars_files:
+    - vars.yml
+
+  vars:
+    java_version: openjdk-17-jdk
+
+  tasks:
+
+    - name: Display Java Version
+      debug:
+        msg: "Installed Java Version is {{ java_version }}"

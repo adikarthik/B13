@@ -1,0 +1,36 @@
+pipeline {
+    agent {
+        label 'Agent-01'
+    }
+
+    // Runs once every hour.
+    // The cron schedule is evaluated by the Jenkins Controller.
+    triggers {
+        cron('H * * * *')
+    }
+
+    stages {
+        stage('Check Agent Timezone') {
+            steps {
+                sh '''
+                    echo "===== Agent-01 Information ====="
+
+                    echo "Hostname:"
+                    hostname
+
+                    echo ""
+                    echo "Current Date and Time:"
+                    date
+
+                    echo ""
+                    echo "Timezone Details:"
+                    timedatectl
+
+                    echo ""
+                    echo "Timezone Environment Variable:"
+                    echo $TZ
+                '''
+            }
+        }
+    }
+}

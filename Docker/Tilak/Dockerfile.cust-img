@@ -1,0 +1,16 @@
+#this file wil create the custom image, create 3 files and copies the config.txt from local
+
+
+FROM ubuntu:26.04
+
+MAINTAINER Tilakk
+
+RUN apt-get update && mkdir testdata && cd testdata
+
+WORKDIR /testdata
+
+RUN touch f1 f2 f3
+
+COPY config.txt .
+
+EXPOSE 8080

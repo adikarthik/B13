@@ -1,0 +1,115 @@
+pipeline {
+
+    agent none
+
+    stages {
+
+        stage('Build Application') {
+
+            agent {
+                label 'Agent-01'
+            }
+
+            steps {
+
+                echo "Building application on Agent-01"
+
+
+                git branch: 'main',
+                    url: 'https://github.com/Deepa-Devops-2026/Amazon.git'
+
+
+                dir('Amazon') {
+
+                    sh 'mvn clean package'
+
+
+                    echo "Stashing Amazon.war"
+
+
+                    stash name: 'amazon-war',
+                          includes: 'Amazon-Web/target/Amazon.war'
+
+                }
+
+
+                echo "Build completed on Agent-01"
+
+            }
+        }
+
+
+
+        stage('Deploy Application') {
+
+            agent {
+                label 'Agent-02'
+            }
+
+            steps {
+
+                echo "Deploying application on Agent-02"
+
+
+                unstash 'amazon-war'
+
+
+                sh '''
+
+                TOMCAT_HOME=/home/deepa/Desktop/Deepa/tomcat/apache-tomcat-9.0.117
+
+
+                echo "Checking WAR file"
+
+                ls -lh Amazon-Web/target/Amazon.war
+
+
+                echo "Removing old deployment"
+
+                rm -rf $TOMCAT_HOME/webapps/Amazon
+
+                rm -f $TOMCAT_HOME/webapps/Amazon.war
+
+
+                echo "Copying WAR to Tomcat"
+
+                cp Amazon-Web/target/Amazon.war \
+                $TOMCAT_HOME/webapps/
+
+
+                echo "Deployment completed successfully"
+
+
+                '''
+
+            }
+        }
+
+    }
+
+
+    post {
+
+        success {
+
+            echo "Application deployed successfully"
+
+        }
+
+
+        failure {
+
+            echo "Pipeline failed"
+
+        }
+
+
+        always {
+
+            echo "Pipeline execution completed"
+
+        }
+
+    }
+
+}

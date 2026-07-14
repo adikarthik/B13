@@ -1,0 +1,23 @@
+---
+- name: Tomcat Deployment using Skip Tags
+  hosts: client_servers
+  become: true
+  tasks:
+    - name: installing java
+      apt:
+        name: openjdk-11-jdk
+        state: present
+      tags:
+        - Java
+    - name: creating tomcat directory
+      file:
+        path: /opt/tomcat
+        state: directory
+      tags:
+        - tomcat
+    - name: copy the Amazon.war file
+      copy:
+        src: Amazon.war
+        dest: /opt/tomcat/webapps/Amazon.war
+      tags:
+        - deploy

@@ -1,0 +1,15 @@
+---
+- name: Demonstrate Always and Never Tags
+  hosts: client_servers
+  become: true
+  tasks:
+    - name: This task always runs
+      debug:
+        msg: I am an ALWAYS task
+      tags:
+        - always
+    - name: This task never runs by default
+      debug:
+        msg: I am a NEVER task
+      tags:
+        - never

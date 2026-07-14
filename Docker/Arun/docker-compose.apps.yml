@@ -1,0 +1,23 @@
+services:
+  b7-java-app:
+    image: arunbelursan/b7-java-app:latest
+    container_name: b7-java-app
+
+  demo1:
+    image: arunbelursan/demo1:latest
+    container_name: demo1
+    ports:
+      - "18080:80"
+
+  demo2:
+    image: arunbelursan/demo2:latest
+    container_name: demo2
+    ports:
+      - "18081:8080"
+
+  sboot-app:
+    image: arunbelursan/sboot-app:latest
+    container_name: sboot-app
+    ports:
+      - "18090:8090"
+      - "18091:8091"

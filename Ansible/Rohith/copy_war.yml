@@ -1,0 +1,17 @@
+
+- name: Copy WAR and start the Tomcat service
+  hosts: all
+  become: yes
+
+  vars:
+    src_path: /home/azureuser/ansible
+
+  tasks:
+
+    - name: Copy WAR file
+      copy:
+        src: /home/azureuser/rohith/Amazon.war
+        dest: "{{ src_path }}/tomcat/apache-tomcat-9.0.89/webapps/Amazon.war"
+
+    - name: Start Tomcat service
+      shell: "{{ src_path }}/tomcat/apache-tomcat-9.0.89/bin/startup.sh"

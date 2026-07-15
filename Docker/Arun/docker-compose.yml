@@ -1,0 +1,19 @@
+services:
+  amazon:
+    image: arun/amazon-app:latest
+    container_name: amazon_app
+    build:
+      context: ./amazon
+      dockerfile: Dockerfile
+    ports:
+      - "11112:8080"
+
+  cicd-azure:
+    image: arun/cicd-azure-app:latest
+    container_name: java_app
+    build:
+      context: ./cicd-azure
+      dockerfile: Dockerfile
+    ports:
+      - "11111:8080"
+

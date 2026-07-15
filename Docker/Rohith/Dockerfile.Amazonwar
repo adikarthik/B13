@@ -1,0 +1,17 @@
+FROM ubuntu:24.04 AS builder
+LABEL maintainer="Rohith"
+WORKDIR /amazon
+RUN apt-get -y update && apt-get install -y openjdk-21-jdk
+RUN apt-get install -y maven
+COPY . /amazon
+RUN mvn clean install
+RUN echo "artifact generated successfully" 
+
+FROM tomcat:9.0
+WORKDIR /app
+COPY --from=builder /amazon/Amazon-Web/target/Amazon.war /app/Amazon.war
+COPY deploy.sh /app/deploy.sh
+RUN chmod +x /app/deploy.sh
+RUN ./deploy.sh
+EXPOSE 8080
+ENTRYPOINT [ "catalina.sh" , "run"]

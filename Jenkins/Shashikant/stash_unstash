@@ -1,0 +1,46 @@
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage('Create File') {
+            steps {
+
+                sh '''
+                    mkdir -p output
+                    echo "Hello Jenkins" > output/test.txt
+
+                    echo "Current Workspace:"
+                    pwd
+
+                    echo "Files before stash:"
+                    ls -R
+                '''
+
+                stash name: 'myfiles', includes: 'output/**'
+            }
+        }
+
+        stage('Restore File') {
+            steps {
+
+                unstash 'myfiles'
+
+                sh '''
+                    echo "Files after unstash:"
+                    ls -R
+
+                    echo "Contents of test.txt:"
+                    cat output/test.txt
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}

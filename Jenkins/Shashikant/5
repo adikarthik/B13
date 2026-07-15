@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Stage 1 - Build') {
+            steps {
+                sh 'echo Building application'
+            }
+        }
+
+      stage('Stage 2 - Test') {
+    steps {
+        sh 'wrongcommand123'
+    }
+}
+
+        stage('Stage 3 - Code Quality') {
+            steps {
+                sh 'echo Checking code quality'
+            }
+        }
+
+        stage('Stage 4 - Package') {
+            steps {
+                sh 'echo Packaging application'
+            }
+        }
+
+        stage('St5 - Deploy') {
+            steps {
+                sh 'echo Deploying application'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build completed SUCCESSFULLY'
+        }
+
+        failure {
+            echo 'Build FAILED'
+        }
+    }
+}

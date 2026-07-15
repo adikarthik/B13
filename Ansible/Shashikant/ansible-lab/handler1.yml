@@ -1,0 +1,23 @@
+---
+- name: Demo Task Failure with Handler
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Install Apache
+      apt:
+        name: apache2
+        state: present
+      notify:
+        - Restart Apache
+
+    - name: Fail the task intentionally
+      command: /bin/false
+
+  handlers:
+
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted

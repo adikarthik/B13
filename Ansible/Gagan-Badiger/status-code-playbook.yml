@@ -1,0 +1,37 @@
+---
+- name: Demonstrate Ansible Status Codes
+  hosts: client_servers
+  become: true
+  tasks:
+    - name: Check if Java already installed
+      apt:
+        name: openjdk-17-jdk
+        state: present
+      tags: ok_status
+    - name: Create denmo file
+      file:
+        path: /tmp/deno_status_file
+        state: touch
+      tags: changed_status
+    - name: This task will be skipped
+      debug:
+        msg: This runs only on RedHat
+      when: ansible_os_family == "RedHat"
+      tags: skipped_status
+    - name: Intentionally fail the task
+      command: /bin/false
+      ignore_errors: yes
+      tags: failed_status
+    - name: Ignored failure demo
+      command: invalid_command
+      ignore_errors: yes
+      tags: ignored_status
+    - name: Block rescue demo
+      block:
+        - name: Force a failure
+          command: /bin/false
+      rescue:
+        - name: Rescue task executed
+          debug:
+            msg: Failure handled successfully
+      tags: rescued_status

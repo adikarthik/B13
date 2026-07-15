@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+
+  war-builder:
+
+    build:
+      context: ./war-builder
+
+    image: amazon-war-builder
+
+    container_name: amazon-war-builder-container
+
+    volumes:
+      - war-volume:/shared
+
+  tomcat:
+
+    build:
+      context: ./tomcat-runtime
+
+    image: amazon-tomcat-runtime
+
+    container_name: amazon-tomcat-container
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - war-volume:/shared
+
+    depends_on:
+      - war-builder
+
+  springboot:
+
+    build:
+      context: ./springboot-runtime
+
+    image: amazon-springboot-runtime
+
+    container_name: amazon-springboot-container
+
+    ports:
+      - "9090:8080"
+
+volumes:
+  war-volume:

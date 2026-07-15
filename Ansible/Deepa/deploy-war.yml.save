@@ -1,0 +1,16 @@
+---
+- hosts: tomc
+  become: yes
+
+  tasks:
+
+    - name: Copy WAR file
+      copy:
+        src: /var/lib/jenkins/workspace/AmazonPipeline/Amazon.war
+        dest: /opt/tomcat/webapps/Amazon.war
+        mode: '0644'
+
+    - name: Restart Tomcat
+      service:
+        name: tomcat
+        state: restarted

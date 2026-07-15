@@ -1,0 +1,11 @@
+FROM tomcat:9.0-jdk17
+
+COPY Amazon.war /tmp/Amazon.war
+
+COPY deploy.sh /deploy.sh
+
+RUN chmod +x /deploy.sh
+
+EXPOSE 8080
+
+CMD ["/deploy.sh"]

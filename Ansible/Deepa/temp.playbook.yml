@@ -1,0 +1,11 @@
+---
+- name: Create a file as tomcat user
+  hosts: devvm1
+  become: yes
+  become_user: root
+
+  tasks:
+    - name: Create test file
+      file:
+        path: /tmp/test.txt
+        state: touch

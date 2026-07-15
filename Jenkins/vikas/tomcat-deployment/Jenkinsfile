@@ -1,0 +1,23 @@
+pipeline {
+
+    agent any
+
+    stages {
+
+        stage('Build WAR') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Deploy Tomcat') {
+            steps {
+                sh '''
+                cp target/*.war /opt/tomcat/webapps/
+                '''
+            }
+        }
+
+    }
+
+}

@@ -1,0 +1,62 @@
+---
+- name: Linux VM Troubleshooting
+  hosts: all
+  become: yes
+
+  tasks:
+
+    - name: Hostname details
+      command: hostname
+      register: hostname_output
+
+    - name: Get uptime
+      command: uptime
+      register: uptime_output
+
+    - name: Check disk usage
+      command: df -h
+      register: disk_output
+
+    - name: Check memory usage
+      command: free -m
+      register: memory_output
+
+    - name: Check CPU load
+      shell: top -bn1 | head -5
+      register: cpu_output
+
+    - name: Check logged-in users
+      command: who
+      register: users_output
+
+    - name: Check running processes
+      shell: ps -ef | head -20
+      register: process_output
+
+    - name: Check listening ports
+      shell: ss -tulnp
+      register: ports_output
+
+    - name: Check recent system errors
+      shell: journalctl -p err -n 20 --no-pager
+      register: errors_output
+      ignore_errors: yes
+
+    - name: Check filesystem inode usage
+      command: df -i
+      register: inode_output
+
+    - name: Display troubleshooting report
+      debug:
+        msg:
+          - "Hostname: {{ hostname_output.stdout }}"
+          - "Uptime: {{ uptime_output.stdout }}"
+          - "Disk Usage: {{ disk_output.stdout_lines }}"
+          - "Memory Usage: {{ memory_output.stdout_lines }}"
+          - "CPU Details: {{ cpu_output.stdout_lines }}"
+          - "Logged Users: {{ users_output.stdout_lines }}"
+          - "Processes: {{ process_output.stdout_lines }}"
+          - "Listening Ports: {{ ports_output.stdout_lines }}"
+          - "Errors: {{ errors_output.stdout_lines }}"
+          - "Inode Usage: {{ inode_output.stdout_lines }}"
+

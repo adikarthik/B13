@@ -1,0 +1,9 @@
+---
+- name: Convert ad-hoc command into the playbook
+  hosts: client_server
+  become: true
+  tasks:
+    - name: copy the files from ansible mgmt node to the client machine
+      copy:
+        src: /home/gagan/test.txt
+        dest: /home/azureuser/

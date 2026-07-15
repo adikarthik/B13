@@ -1,0 +1,11 @@
+---
+- name: Deploy Amazon.war to Tomcat Server
+  hosts: webservers
+  become: yes
+
+  tasks:
+
+    - name: Copy Amazon.war to Tomcat webapps
+      copy:
+        src: /home/vicky/documents/amazon.war
+        dest: /opt/tomcat/webapps/amazon.war

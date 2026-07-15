@@ -1,0 +1,45 @@
+---
+- name: Convert the adhoc command into playbook
+  hosts: webservers
+  become: true
+
+  tasks:
+
+    - name: Copy file from Ansible management node to client machine
+      copy:
+        src: /home/deepa/Desktop/ansi/test.txt
+        dest: /home/azureuser/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+

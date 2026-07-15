@@ -1,0 +1,20 @@
+---
+services:
+  tomcat:
+    build:
+     context: /home/azureuser/amazon-war-deploy/
+    image: tomcat:9.0
+    ports:
+      - 8081:8080
+    volumes:
+      - testvolume:/home
+    networks:
+      - mynetwork
+volumes:
+  testvolume:
+    external: true
+networks:
+  mynetwork:
+    external: true  
+
+

@@ -1,0 +1,15 @@
+- name: Using duplicate variable
+  hosts: all
+  become: yes
+
+  vars:
+    java_version: openjdk-21-jdk
+    java_version: openjdk-17-jdk
+
+  tasks:
+
+    - name: Install Java
+      apt:
+        name: "{{ java_version }}"
+        state: present
+        update_cache: yes

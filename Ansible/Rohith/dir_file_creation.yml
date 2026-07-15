@@ -1,0 +1,15 @@
+- name : Create a Directory and Copy the file from control machine
+  hosts: servers
+  become: yes
+
+tasks:
+
+ - name: Creating a directory
+   file:
+     path: opt/myapp/data
+     state: directory
+
+ - name: Copy the file
+   copy: 
+    source: "/home/mydesktop/config.xml"
+    dest: "opt/myapp/data/config.xml"

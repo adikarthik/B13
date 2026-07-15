@@ -1,0 +1,5 @@
+[servers]
+LinVM ansible_host=20.94.242.164 ansible_user=azureuser ansible_privte_key_file=/home/Desktop/DevOpsCourse/Ansible/LinuxVM.pem
+
+[testserver]
+WindVM anisble_host=13.94.27.164 ansible_user=azureuser ansible_passowrd=rohithuser@02

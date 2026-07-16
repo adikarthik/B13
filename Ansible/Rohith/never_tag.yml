@@ -1,0 +1,20 @@
+
+- name: Installing the tools
+  hosts: servers
+  become: yes
+
+  tasks:
+
+    - name: Install Java
+      apt:
+        name: openjdk-21-jdk
+        state: present
+        update_cache: yes
+      tags:
+        - Java
+
+    - name: Display Message
+      debug:
+        msg: "This is message"
+      tags:
+        - never

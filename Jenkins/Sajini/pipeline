@@ -1,0 +1,82 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = "tomcat-app"
+        IMAGE_NAME = "tomcat-app"
+        CONTAINER_NAME = "tomcat-container"
+    }
+
+    tools {
+        maven "Maven"
+        jdk "JDK17"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/username/repository.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('List Files') {
+            steps {
+                sh 'ls -l target/'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $IMAGE_NAME .'
+            }
+        }
+
+        stage('Remove Old Container') {
+            steps {
+                sh '''
+                docker stop $CONTAINER_NAME || true
+                docker rm $CONTAINER_NAME || true
+                '''
+            }
+        }
+
+        stage('Run Tomcat Container') {
+            steps {
+                sh '''
+                docker run -d \
+                --name $CONTAINER_NAME \
+                -p 8080:8080 \
+                $IMAGE_NAME
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                sh 'docker ps'
+            }
+        }
+    }
+
+    post {
+
+        always {
+            echo "Pipeline Completed"
+        }
+
+        success {
+            echo "Application Deployed Successfully"
+        }
+
+        failure {
+            echo "Deployment Failed"
+        }
+    }
+}

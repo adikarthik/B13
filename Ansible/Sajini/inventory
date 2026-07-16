@@ -1,0 +1,2 @@
+[appserver]
+4.224.55.78 ansible_user=azureuser ansible_ssh_private_key_file=key.pem

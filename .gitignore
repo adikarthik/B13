@@ -40,3 +40,16 @@ crash.log
 
 # Optional
 .terraform.lock.hcl
+
+# Generated Terraform plans
+tfplan
+*.tfplan
+plan.json
+
+# Editor and operating-system artifacts
+*.swp
+*.swo
+.DS_Store
+
+# Local credential helper files
+*_pass.txt

@@ -1,0 +1,26 @@
+- name: Installing the requirements in the node machines
+  hosts: all
+  become: true
+
+  vars:
+    src_path: /home/azureuser/ansible
+    tomcat_url: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.89/bin/apache-tomcat-9.0.89.tar.gz
+
+  tasks:
+
+    - name: Install Java
+      apt:
+        name: openjdk-21-jdk
+        state: present
+        update_cache: yes
+
+    - name: Download Tomcat
+      get_url:
+        url: "{{ tomcat_url }}"
+        dest: "{{ src_path }}"
+
+    - name: Extract Tomcat
+      unarchive:
+        src: "{{ src_path }}/apache-tomcat-9.0.89.tar.gz"
+        dest: "{{ src_path }}/tomcat"
+        remote_src: yes

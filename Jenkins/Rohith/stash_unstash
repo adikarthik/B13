@@ -1,0 +1,32 @@
+pipeline {
+    agent none
+
+    stages {
+
+        stage('Build on Agent A') {
+            agent { label 'node1' }
+
+            steps {
+                script {
+                    echo "Creating file on Agent 1"
+                    sh 'echo "Hello from Agent 1" > java.txt'
+                    echo "Stashing"
+                    stash name: 'app-files', includes: 'java.txt'
+                    echo "File stashed successfully"
+                }
+            }
+        }
+
+        stage('Deploy on Agent 2') {
+            agent { label 'agnet2' }
+
+            steps {
+                script {
+                    echo "Unstashing"
+                    unstash 'app-file'
+                    sh 'cat app.txt'
+                }
+            }
+        }
+    }
+}

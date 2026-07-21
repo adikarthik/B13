@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo "Building project..."
+            }
+        }
+    }
+
+    post {
+        success {
+            emailext(
+                subject: "Build Successful: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                Good news!
+
+                Job: ${env.JOB_NAME}
+                Build Number: ${env.BUILD_NUMBER}
+                Status: SUCCESS
+
+                Check details: ${env.BUILD_URL}
+                """,
+                to: "rohi.devops@gmail.com"
+            )
+        }
+
+        failure {
+            emailext(
+                subject: "Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                Alert!
+
+                Job: ${env.JOB_NAME}
+                Build Number: ${env.BUILD_NUMBER}
+                Status: FAILURE
+
+                Check details: ${env.BUILD_URL}
+                """,
+                to: "rohi.devops@gmail.com"
+            )
+        }
+    }
+}

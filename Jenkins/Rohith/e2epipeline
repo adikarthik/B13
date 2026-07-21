@@ -1,0 +1,61 @@
+pipeline {
+    agent any
+
+    environment {
+        IP = "13.70.0.90"
+        SSH_CREDENTIALS = "azure-vm"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                git branch: 'master',
+                    url: 'https://github.com/Rohith-hub-code/Amazon.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                dir('Amazon') {
+                    sh 'mvn clean package'
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                dir('Amazon') {
+                    sh 'mvn test'
+                }
+            }
+        }
+
+        stage('Archive') {
+            steps {
+                archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sshagent(credentials: ["${SSH_CREDENTIALS}"]) {
+                    sh '''
+                    WAR_FILE=$(find . -name "Amazon.war" | head -n 1)
+
+                    scp -o StrictHostKeyChecking=no \
+                    $WAR_FILE \
+                    azureuser@$IP:/home/azureuser/tomcatprod/apache-tomcat-9.0.89/webapps/
+                    '''
+                }
+            }
+        }
+        
+        stage('Health Check')
+        {
+            steps{
+                sh '/opt/scripts/Health_Check.sh'
+            }
+        }
+    }
+}

@@ -1,0 +1,25 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+            }
+        }
+    }
+
+    post {
+        success {
+            mail to: 'rohithrohi246@gmail.com',
+                 subject: 'Build Success',
+                 body: 'Your Jenkins build completed successfully.'
+        }
+
+        failure {
+            mail to: 'rohithrohi246@gmail.com',
+                 subject: 'Build Failed',
+                 body: 'Please check the Jenkins console output.'
+        }
+    }
+}

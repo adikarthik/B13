@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Creds are Bounded') {
+            steps {
+
+                withCredentials([usernamePassword(
+                    credentialsId: 'creds',
+                    usernameVariable: 'USER',
+                    passwordVariable: 'PASS'
+                )]) {
+
+                    sh '''
+                        echo "$PASS"
+                        git clone https://$USER:$PASS@github.com/myorg/myrepo.git
+                        
+                    '''
+                }
+            }
+        }
+    }
+}

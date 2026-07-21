@@ -1,0 +1,36 @@
+pipeline{
+    agent any
+    
+    stages{
+        stage('Starting the VM')
+        {
+            steps{
+            sh '''
+            /home/rohi/Desktop/stopvm.sh
+            /home/rohi/Desktop/usedcredits.sh
+            '''
+            }
+        }
+        stage('Reading the cost')
+        {
+            steps()
+            {
+               script {
+                env.COST = readFile('/home/rohi/Desktop/cost.txt').trim()
+                      }
+            }
+        }
+    }
+    post {
+        success {
+            mail to: 'rohithrohi246@gmail.com',
+                 subject: 'Deallocating the VM',
+                 body: """VM is stoped and deallocating successfully. Credits Consumed: ${env.COST}"""
+        }
+        failure {
+            mail to: 'rohithrohi246@gmail.com',
+            subject: 'VM Failed to Stop',
+            body: 'VM is failed to stop, please check the console output.'
+        }
+    }
+}

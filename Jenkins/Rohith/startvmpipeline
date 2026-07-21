@@ -1,0 +1,27 @@
+pipeline{
+    agent any
+    
+    stages{
+        stage('Starting the VM')
+        {
+            steps{
+            sh '''
+            /home/rohi/Desktop/credits.sh
+            /home/rohi/Desktop/startvm.sh
+            '''
+            }
+        }
+    }
+    post {
+        success {
+            mail to: 'rohithrohi246@gmail.com',
+                 subject: 'VM Started',
+                 body: 'VM is started successfully.'
+        }
+        failure {
+            mail to: 'rohithrohi246@gmail.com',
+            subject: 'VM Failed to Start',
+            body: 'VM is failed to start, please check the console output.'
+        }
+    }
+}

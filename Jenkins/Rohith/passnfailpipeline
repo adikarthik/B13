@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    environment {
+        ARTIFACT_DIR = "/home/rohi/Desktop/DevOpsCourse/Jenkins"
+    }
+
+    stages {
+
+    stage('Build') {
+            steps {
+                sh '''
+                echo "Creating new artifact..."
+                echo "Created the artifact : app.jar inside given path"
+                '''
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh '''
+                if [ -f "$ARTIFACT_DIR/host/app.jar" ];
+                then
+                echo "ERROR: Old deployed app.jar already exists."
+                echo "Deployment directory is dirty."
+                exit 1
+                else
+                    echo "No old artifact found."
+                    cp "$ARTIFACT_DIR/app.jar" "$ARTIFACT_DIR/host/"
+                    echo "The new artifact is deployed"
+                fi
+                '''
+            }
+        }
+
+    }
+}

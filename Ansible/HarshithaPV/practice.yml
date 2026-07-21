@@ -1,0 +1,41 @@
+---
+- name: Install Java, Deploy Tomcat and Amazon Application
+  hosts: all
+  become: yes
+
+  vars:
+    java_package: openjdk-17-jdk
+    tomcat_version: 9.0.108
+    tomcat_home: /opt/tomcat
+    tomcat_tar: apache-tomcat-9.0.108.tar.gz
+    tomcat_url: https://archive.apache.org/dist/tomcat/tomcat-9/v9.0.108/bin/apache-tomcat-9.0.108.tar.gz
+    war_file: Amazon.war
+    war_source: files/Amazon.war
+
+  tasks:
+
+    - name: Install Java
+      apt:
+        name: "{{ java_package }}"
+        state: present
+        update_cache: yes
+
+    - name: Download Apache Tomcat
+      get_url:
+        url: "{{ tomcat_url }}"
+        dest: "/tmp/{{ tomcat_tar }}"
+
+    - name: Create Tomcat base directory
+      file:
+        path: "{{ tomcat_home }}"
+        state: directory
+
+    - name: Extract Tomcat archive
+      unarchive:
+        src: "/tmp/{{ tomcat_tar }}"
+        dest: "{{ tomcat_home }}"
+        remote_src: yes
+
+
+    - name: Start Tomcat
+      shell: "{{ tomcat_home }}/apache-tomcat-{{ tomcat_version }}/bin/startup.sh"

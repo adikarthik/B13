@@ -1,0 +1,29 @@
+#!/bin/bash 
+# Thresholds 
+CPU_THRESHOLD=80 
+MEM_THRESHOLD=80 
+DISK_THRESHOLD=90 
+# Log file 
+LOGFILE="/tmp/system_monitor.log" 
+# CPU Usage 
+CPU_USAGE=$(top -bn1 | grep "Cpu(s)" | awk '{print 100 - $8}') 
+CPU_USAGE=${CPU_USAGE%.*} 
+# Memory Usage 
+MEM_USAGE=$(free | awk '/Mem:/ {printf("%.0f"), $3/$2 * 100}') 
+# Disk Usage (/ filesystem) 
+DISK_USAGE=$(df -h / | awk 'NR==2 {print $5}' | sed 's/%//') 
+# CPU Alert 
+if [ "$CPU_USAGE" -gt "$CPU_THRESHOLD" ]; then 
+echo "ALERT: CPU usage is ${CPU_USAGE}%" | tee -a "$LOGFILE" 
+fi 
+# Memory Alert 
+if [ "$MEM_USAGE" -gt "$MEM_THRESHOLD" ]; then 
+echo "ALERT: Memory usage is ${MEM_USAGE}%" | tee -a "$LOGFILE" 
+fi 
+# Disk Alert and Cleanup 
+if [ "$DISK_USAGE" -gt "$DISK_THRESHOLD" ]; then 
+echo "ALERT: Disk usage is ${DISK_USAGE}% - Cleaning old logs..." | tee -a "$LOGFILE" 
+find /var/log -name "*.log" -type f -mtime +30 -delete 
+echo "Old logs removed." | tee -a "$LOGFILE" 
+fi 
+echo "CPU=${CPU_USAGE}% MEM=${MEM_USAGE}% DISK=${DISK_USAGE}%" >> "$LOGFILE"

@@ -1,0 +1,13 @@
+#!/bin/bash 
+JENKINS_URL="http://20.116.169.75:8080" 
+JOB_NAME="tf-jenkins" 
+USER="jk" 
+TOKEN="11569f9b2c2e557b0a419c0edda202ca77" 
+RESPONSE=$(curl -s \ -u "$USER:$TOKEN" \ 
+"$JENKINS_URL/job/$JOB_NAME/lastBuild/api/json") 
+RESULT=$(echo "$RESPONSE" | jq -r '.result') 
+BUILD=$(echo "$RESPONSE" | jq -r '.number') 
+echo "Job Name     : $JOB_NAME" 
+echo "Build Number : $BUILD" 
+echo "Status       
+: $RESULT"

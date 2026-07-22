@@ -1,0 +1,27 @@
+#!/bin/bash  
+set -e  
+# Configuration  
+LOG_FILE="app.log"  
+ARCHIVE_DIR="archive"  
+# Azure Storage  
+STORAGE_ACCOUNT="git1jenstorage12345"  
+CONTAINER_NAME="logs"  
+# Retention  
+RETENTION_DAYS=30  
+# Timestamp  
+TS=$(date +"%Y%m%d_%H%M%S")  
+mkdir -p "$ARCHIVE_DIR"  
+# Rotate log  
+ROTATED_LOG="$ARCHIVE_DIR/app_${TS}.log"  
+mv "$LOG_FILE" "$ROTATED_LOG"  
+# Create new empty log  
+touch "$LOG_FILE"  
+# Compress gzip 
+"$ROTATED_LOG"  
+ARCHIVE_FILE="${ROTATED_LOG}.gz"  
+echo "Compressed: $ARCHIVE_FILE"  
+# Upload to Azure Blob Storage  
+az storage blob upload \  --account-name "$STORAGE_ACCOUNT" \  --container-name "$CONTAINER_NAME" \  --file "$ARCHIVE_FILE" \  --name "$(basename "$ARCHIVE_FILE")" \ echo "Uploaded to Azure Blob"  
+# Purge local archives older than retention period  
+find "$ARCHIVE_DIR" -name "*.gz" -type f -mtime +$RETENTION_DAYS -delete  
+echo "Old archives purged" 

@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Before Build') {
+            steps {
+                sh 'df -h'
+            }
+        }
+
+        stage('Generate Files') {
+            steps {
+                sh '''
+                mkdir output
+
+                for i in $(seq 1 500); do
+                    dd if=/dev/zero of=output/$i.bin bs=5M count=1
+                done
+                '''
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh '''
+                tar czf package.tar.gz output
+                '''
+            }
+        }
+
+        stage('After Failure Investigation') {
+            steps {
+                sh '''
+                echo "Disk usage:"
+                df -h
+
+                echo "Workspace size:"
+                du -sh .
+                '''
+            }
+        }
+
+    }
+}

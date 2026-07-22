@@ -1,0 +1,15 @@
+pipeline {
+    agent { label 'linux' }
+    stages {
+        stage('Check Time') {
+            steps {
+                sh '''
+                echo "===== Agent Details ====="
+                hostname
+                date
+                timedatectl
+               '''
+            }
+        }
+    }
+}

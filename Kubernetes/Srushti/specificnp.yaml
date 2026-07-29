@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: tomcat
+  name: test
+spec:
+  ports:
+  - name: 8080-8080
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+    nodePort: 31234
+  selector:
+    app: tomcat
+  type: NodePort
+status:
+  loadBalancer: {}
+
+

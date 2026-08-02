@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: db-client
+
+spec:
+  containers:
+  - name: client
+    image: adikarthik/demo
+    volumeMounts:
+    - name: secret-vol
+      mountPath: /etc/secrets
+      readOnly: true
+
+  volumes:
+  - name: secret-vol
+    secret:
+      secretName: db-creds

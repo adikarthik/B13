@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+
+kind: StatefulSet
+
+metadata:
+
+  name: cache
+
+spec:
+
+  serviceName: cache
+
+  replicas: 3
+
+  updateStrategy:
+
+    type: OnDelete
+
+  selector:
+
+    matchLabels:
+
+      app: cache
+
+  template:
+
+    metadata:
+
+      labels:
+
+        app: cache
+
+    spec:
+
+      containers:
+
+      - name: cache
+
+        image: redis:7

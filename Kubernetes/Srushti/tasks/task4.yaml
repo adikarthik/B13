@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+
+kind: Job
+
+metadata:
+
+  name: report-job
+
+spec:
+
+  template:
+
+    spec:
+
+      containers:
+
+      - name: report
+
+        image: hello-world
+      restartPolicy: Never

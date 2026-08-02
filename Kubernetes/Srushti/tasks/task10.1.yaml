@@ -1,0 +1,21 @@
+apiVersion: v1
+
+kind: Pod
+
+metadata:
+
+  name: app-pod
+
+spec:
+
+  containers:
+
+  - name: app
+
+    image: tomcat:8.0
+
+    envFrom:
+
+    - configMapRef:
+
+        name: app-config

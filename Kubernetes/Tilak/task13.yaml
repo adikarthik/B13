@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: batch-deploy
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: batch
+  template:
+    metadata:
+      labels:
+        app: batch
+    spec:
+      containers:
+      - name: batch
+        image: adikarthik/demo
+        resources:
+          requests:
+            cpu: "250m"

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: api-deploy
+
+spec:
+  replicas: 3
+
+  selector:
+    matchLabels:
+      app: api-v2
+
+  template:
+    metadata:
+      labels:
+        app: api-v2
+
+    spec:
+      containers:
+        - name: api
+          image: adikarthik/demo
+

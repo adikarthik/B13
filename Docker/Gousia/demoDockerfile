@@ -1,0 +1,6 @@
+FROM ubuntu:24.04
+ 
+ARG USERNAME=Gousia
+ 
+RUN echo "Welcome $USERNAME"
+

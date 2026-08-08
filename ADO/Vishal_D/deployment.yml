@@ -1,0 +1,33 @@
+trigger: none
+
+pool:
+  name: Winagent1
+
+stages:
+- stage: Build
+  displayName: 'Build and Generate Artifact'
+
+  jobs:
+  - job: BuildJob
+    displayName: 'Generate Build Artifact'
+
+    steps:
+
+    # Checkout the repository
+    - checkout: self
+
+    # Copy repository files to the artifact staging directory
+    - task: AzureFileCopy@6
+      displayName: 'Copy Files to Artifact Staging'
+      inputs:
+        SourceFolder: '$(Build.SourcesDirectory)'
+        Contents: '**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    # Publish the artifact
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publish Build Artifact'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'RepoArtifact'
+        publishLocation: 'Container'

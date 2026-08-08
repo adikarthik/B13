@@ -1,0 +1,17 @@
+version: "2.3"
+
+services:
+  tomcat1:
+    image: tomcat:9.0
+    ports:
+      - "8091:8080"
+    volumes:
+      - myvolume:/home
+    networks:
+      - mynetwork
+
+volumes:
+  myvolume:
+
+networks:
+  mynetwork:

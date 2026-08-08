@@ -1,0 +1,26 @@
+trigger: none
+ 
+pool:
+  name: Batch13-agents
+ 
+variables:
+  storageaccountname: vdsa133
+  storagecontainername: vdc
+ 
+stages:
+- stage: CopyStage
+  displayName: Copy Files to Azure Blob
+ 
+  jobs:
+  - job: AzureBlobCopyJob
+    displayName: Copy File
+ 
+    steps:
+    - task: AzureFileCopy@6
+      displayName: StorageAccountFileTransfer
+      inputs:
+        SourcePath: 'class2.txt'
+        azureSubscription: 'VDSP'
+        Destination: AzureBlob
+        storage: '$(storageaccountname)'
+        ContainerName: '$(storagecontainername)'

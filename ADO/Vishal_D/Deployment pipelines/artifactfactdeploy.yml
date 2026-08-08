@@ -1,0 +1,48 @@
+trigger: none
+
+pool:
+  name: Batch13-agents
+
+stages:
+- stage: Build
+  displayName: 'Build and Publish Artifact'
+
+  jobs:
+  - job: BuildJob
+    steps:
+    - checkout: self
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Pipeline Artifact'
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)/scheduletrigger.yml'
+        artifact: 'Test1'
+
+- stage: Deploy
+  displayName: 'Deploy Artifact'
+  dependsOn: Build
+
+  jobs:
+  - job: DeployJob
+    steps:
+
+    - download: current
+      artifact: Test1
+
+    - task: AzureFileCopy@6
+      displayName: 'Copy to vdc'
+      inputs:
+        SourcePath: '$(Pipeline.Workspace)/Test1/scheduletrigger.yml'
+        azureSubscription: 'VDSP'
+        Destination: AzureBlob
+        storage: 'vdsa133'
+        ContainerName: 'vdc'
+
+    - task: AzureFileCopy@6
+      displayName: 'Copy to abc'
+      inputs:
+        SourcePath: '$(Pipeline.Workspace)/Test1/scheduletrigger.yml'
+        azureSubscription: 'VDSP'
+        Destination: AzureBlob
+        storage: 'vdsa133'
+        ContainerName: 'abc'

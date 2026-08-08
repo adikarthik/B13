@@ -1,0 +1,22 @@
+trigger: none
+
+pool:
+  name: Batch13-agents
+
+stages:
+- stage: Build
+  displayName: 'Build and Publish Artifact'
+
+  jobs:
+  - job: BuildJob
+    displayName: 'Generate Artifact'
+
+    steps:
+
+    - checkout: self
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Pipeline Artifact'
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)/repocopy.yml'
+        artifact: 'Test1'

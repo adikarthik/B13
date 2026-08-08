@@ -1,0 +1,20 @@
+trigger: none
+
+pool:
+  name: Batch13-agents
+
+stages:
+- stage: copyfiles
+  displayName: Copy Repository to Blob
+
+  jobs:
+  - job: AzureBlobCopyJob
+    steps:
+    - task: AzureFileCopy@6
+      displayName: Upload Repository to Blob
+      inputs:
+        SourcePath: '.'
+        azureSubscription: 'VDSP'
+        Destination: 'AzureBlob'
+        storage: 'vdsa133'
+        ContainerName: 'vdc'

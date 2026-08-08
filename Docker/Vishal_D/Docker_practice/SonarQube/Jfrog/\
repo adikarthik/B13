@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: jfrog-postgres
+    environment:
+      POSTGRES_DB: artifactory
+      POSTGRES_USER: artifactory
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  artifactory:
+    image: releases-docker.jfrog.io/jfrog/artifactory-oss:latest
+    container_name: jfrog
+
+    ports:
+      - "9002:8081"
+      - "9003:8082"
+
+    environment:
+      JF_SHARED_DATABASE_TYPE: postgresql
+      JF_SHARED_DATABASE_DRIVER: org.postgresql.Driver
+      JF_SHARED_DATABASE_URL: jdbc:postgresql://postgres:5432/artifactory
+      JF_SHARED_DATABASE_USERNAME: artifactory
+      JF_SHARED_DATABASE_PASSWORD: password
+
+    depends_on:
+      - postgres
+
+    volumes:
+      - ~/jfrog-data:/var/opt/jfrog/artifactory
+
+
+volumes:
+  postgres_data:

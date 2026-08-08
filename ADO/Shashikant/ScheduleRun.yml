@@ -1,0 +1,30 @@
+trigger: none
+
+schedules:
+#- cron: "30 4 * * *"      
+  displayName: Daily 04:30 AM IST
+  branches:
+    include:
+      - feature/class4
+  always: true
+
+pool:
+  name: Shashi_Pool
+  demands:
+    - Agent.Name -equals shashiagent
+
+stages:
+- stage: copystage
+  displayName: Copy-files
+
+  jobs:
+  - job: AzureBlobCopyJob
+    steps:
+    - task: AzureFileCopy@6
+      displayName: StorageAccountFileTransfer
+      inputs:
+        SourcePath: 'Azure-devops-class2.txt'
+        azureSubscription: 'shashi-service-hp'
+        Destination: 'AzureBlob'
+        storage: 'maskisa'
+        ContainerName: 'smcont'

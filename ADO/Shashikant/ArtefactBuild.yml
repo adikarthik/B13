@@ -1,0 +1,48 @@
+trigger:
+  branches:
+    include:
+      - feature/class4
+
+pool:
+  name: Shashi_Pool
+
+stages:
+
+- stage: Build
+  displayName: Build and Publish Artifact
+
+  jobs:
+  - job: BuildJob
+    displayName: Publish Artifact
+
+    steps:
+    - checkout: self
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish Pipeline Artifact
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)/Azure-devops-class2.txt'
+        artifact: 'BuildArtifact'
+
+
+- stage: Deploy
+  displayName: Deploy Artifact
+
+  dependsOn: Build
+
+  jobs:
+  - job: DeployJob
+    displayName: Deploy Artifact to Blob
+
+    steps:
+    - download: current
+      artifact: BuildArtifact
+
+    - task: AzureFileCopy@6
+      displayName: Copy Artifact to Blob
+      inputs:
+        SourcePath: '$(Pipeline.Workspace)/BuildArtifact/Azure-devops-class2.txt'
+        azureSubscription: 'shashi-service-hp'
+        Destination: AzureBlob
+        storage: 'maskisa'
+        ContainerName: 'smcont'

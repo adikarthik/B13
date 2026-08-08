@@ -1,0 +1,25 @@
+trigger: none
+
+pool:
+  name: Shashi_Pool
+
+variables:
+- group: storage-vg
+
+stages:
+- stage: CopyStage
+  displayName: Copy Files to Azure Blob
+
+  jobs:
+  - job: AzureBlobCopyJob
+    displayName: Copy File
+
+    steps:
+    - task: AzureFileCopy@6
+      displayName: StorageAccountFileTransfer
+      inputs:
+        SourcePath: 'Azure-devops-class2.txt'
+        azureSubscription: 'shashi-service-hp'
+        Destination: AzureBlob
+        storage: '$(storageaccountname)'
+        ContainerName: '$(storagecontainername)'

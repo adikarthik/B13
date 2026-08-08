@@ -1,0 +1,11 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: report-job-vinay
+spec:
+  template:
+    spec:
+      containers:
+      - name: report
+        image: nginx:1.25
+      restartPolicy: OnFailure

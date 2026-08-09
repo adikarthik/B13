@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: demo
+  labels:
+    app: demo
+
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: demo
+
+  template:
+    metadata:
+      labels:
+        app: demo
+
+    spec:
+      containers:
+        - name: myfirstimage
+          image: gousia00/myfirstimage:2.7
+
+        - name: rest
+          image: gousia00/myfirstimage:2.7

@@ -1,0 +1,106 @@
+trigger: none
+
+pool:
+  name: 'Batch13-agents'
+
+variables:
+  azureServiceConnection: 'VDSP'
+  backendResourceGroup: 'VD-project'
+  backendStorageAccount: 'vdterraform'
+  backendContainer: 'vdcont'
+  backendKey: 'batch13.tfstate'
+
+stages:
+
+# ================= INIT =================
+- stage: Init
+  displayName: Terraform Init
+
+  jobs:
+  - job: InitJob
+    displayName: Terraform Init
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: '$(Build.SourcesDirectory)\terraform files'
+        inlineScript: |
+          terraform version
+
+          terraform init `
+            -backend-config="resource_group_name=$(backendResourceGroup)" `
+            -backend-config="storage_account_name=$(backendStorageAccount)" `
+            -backend-config="container_name=$(backendContainer)" `
+            -backend-config="key=$(backendKey)"
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish Terraform Files
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)\terraform'
+        artifact: terraform-files
+
+
+# ================= PLAN =================
+- stage: Plan
+  displayName: Terraform Plan
+  dependsOn: Init
+
+  jobs:
+  - job: PlanJob
+    displayName: Terraform Plan
+
+    steps:
+    - checkout: self
+
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Terraform Files
+      inputs:
+        artifact: terraform-files
+        path: '$(Pipeline.Workspace)\terraform files'
+
+    - task: AzureCLI@2
+      displayName: Terraform Plan
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: '$(Pipeline.Workspace)\terraform'
+        inlineScript: |
+          terraform init -reconfigure
+          terraform plan
+
+
+# ================= APPLY =================
+- stage: Apply
+  displayName: Terraform Apply
+  dependsOn: Plan
+
+  jobs:
+  - job: ApplyJob
+    displayName: Terraform Apply
+
+    steps:
+    - checkout: self
+
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Terraform Files
+      inputs:
+        artifact: terraform-files
+        path: '$(Pipeline.Workspace)\terraform'
+
+    - task: AzureCLI@2
+      displayName: Terraform Apply
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: '$(Pipeline.Workspace)\terraform files'
+        inlineScript: |
+          terraform init -reconfigure
+          terraform apply -auto-approve

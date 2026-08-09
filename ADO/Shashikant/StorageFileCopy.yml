@@ -1,0 +1,21 @@
+trigger : none
+
+pool:
+  name: Shashi_Pool
+
+stages: 
+- stage: copystage
+  displayName: Copy-files
+
+  jobs: 
+  - job: AzureBlobCopyJob
+    steps:
+    - task: AzureFileCopy@6
+      displayName: StorageAccountFileTransfer
+      inputs: 
+        SourcePath: 'Azure-devops-class2.txt'
+        azureSubscription: 'shashi-service-hp'
+        Destination: 'AzureBlob'
+        storage: 'maskisa'     
+        ContainerName: 'smcont'
+

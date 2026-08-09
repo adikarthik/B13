@@ -1,0 +1,17 @@
+version: "2.3"
+
+services:
+  tomcat1:
+    image: tomcat:9.0
+    ports:
+      - "8093:8080"
+
+  tomcat2:
+    image: tomcat:9.0
+    ports:
+      - "8094:8080"
+
+  tomcat3:
+    image: tomcat:9.0
+    ports:
+      - "8095:8080"

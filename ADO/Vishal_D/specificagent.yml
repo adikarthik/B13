@@ -1,0 +1,25 @@
+trigger:
+  branches:
+    include:
+      - dev
+
+pool:
+  name: Batch13-agents
+  demands:
+    - Agent.Name -equals Winagent1
+
+stages:
+- stage: copyfiles
+  displayName: Copying files to Blob
+
+  jobs:
+  - job: AzureBlobCopyJob
+    steps:
+    - task: AzureFileCopy@6
+      displayName: StorageAccountFileTransfer
+      inputs:
+        SourcePath: 'class2.txt'
+        azureSubscription: 'VDSP'
+        Destination: 'AzureBlob'
+        storage: 'vdsa133'
+        ContainerName: 'vdc'

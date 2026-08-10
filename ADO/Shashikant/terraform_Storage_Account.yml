@@ -1,0 +1,119 @@
+trigger: none
+
+pool:
+  name: Shashi_Pool
+
+variables:
+  azureServiceConnection: 'shashi-service-hp'
+  backendResourceGroup: 'Shashi'
+  backendStorageAccount: 'maskisa'
+  backendContainer: 'smcont'
+  backendKey: 'shashi.tfstate'
+
+stages:
+
+- stage: Init
+  displayName: Terraform Init
+
+  jobs:
+  - job: InitJob
+    displayName: Terraform Init
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: '$(Build.SourcesDirectory)\terraform'
+        inlineScript: |
+          terraform version
+
+          terraform init `
+            -backend-config="resource_group_name=$(backendResourceGroup)" `
+            -backend-config="storage_account_name=$(backendStorageAccount)" `
+            -backend-config="container_name=$(backendContainer)" `
+            -backend-config="key=$(backendKey)"
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish Terraform Files
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)\terraform'
+        artifact: terraform-files
+
+- stage: Plan
+  displayName: Terraform Plan
+  dependsOn: Init
+
+  jobs:
+  - job: PlanJob
+    displayName: Terraform Plan
+
+    steps:
+    - checkout: self
+
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Terraform Files
+      inputs:
+        artifact: terraform-files
+        path: '$(Pipeline.Workspace)\terraform'
+
+    - task: PowerShell@2
+      displayName: Copy Terraform Files
+      inputs:
+        targetType: inline
+        script: |
+          Copy-Item `
+            -Path "$(Pipeline.Workspace)\terraform\*" `
+            -Destination "$(Build.SourcesDirectory)\terraform" `
+            -Recurse -Force
+
+    - task: AzureCLI@2
+      displayName: Terraform Plan
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: '$(Build.SourcesDirectory)\terraform'
+        inlineScript: |
+          terraform plan
+
+- stage: Apply
+  displayName: Terraform Apply
+  dependsOn: Plan
+
+  jobs:
+  - job: ApplyJob
+    displayName: Terraform Apply
+
+    steps:
+    - checkout: self
+
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Terraform Files
+      inputs:
+        artifact: terraform-files
+        path: '$(Pipeline.Workspace)\terraform'
+
+    - task: PowerShell@2
+      displayName: Copy Terraform Files
+      inputs:
+        targetType: inline
+        script: |
+          Copy-Item `
+            -Path "$(Pipeline.Workspace)\terraform\*" `
+            -Destination "$(Build.SourcesDirectory)\terraform" `
+            -Recurse -Force
+
+    - task: AzureCLI@2
+      displayName: Terraform Apply
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: '$(Build.SourcesDirectory)\terraform'
+        inlineScript: |
+          terraform apply -auto-approve

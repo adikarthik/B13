@@ -1,0 +1,26 @@
+trigger: none
+
+pool:
+  name: Shashi_Pool
+  demands:
+    - Agent.Name -equals shashiagent
+
+stages:
+- stage: CopyStage
+  displayName: Copy Repository to Blob
+
+  jobs:
+  - job: AzureBlobCopyJob
+    displayName: Copy All Files
+
+    steps:
+    - checkout: self
+
+    - task: AzureFileCopy@6
+      displayName: Copy Repository to Storage Account
+      inputs:
+        SourcePath: '.'
+        azureSubscription: 'shashi-service-hp'
+        Destination: 'AzureBlob'
+        storage: 'maskisa'
+        ContainerName: 'smcont'

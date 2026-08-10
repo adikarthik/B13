@@ -1,0 +1,17 @@
+services:
+
+  amazon-app:
+    build:
+      context: .
+      dockerfile: amazon.Dockerfile
+    container_name: amazon-container
+    ports:
+      - "8080:8080"
+
+  jar-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.jar
+    container_name: devops-demo-container
+    ports:
+      - "8081:8080"

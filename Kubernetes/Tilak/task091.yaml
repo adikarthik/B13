@@ -1,0 +1,14 @@
+apiVersion: v1
+
+kind: Secret
+
+metadata:
+
+  name: db-creds
+
+type: Opaque
+
+stringData:
+
+  password: "s3cr3t"
+

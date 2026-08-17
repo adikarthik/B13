@@ -1,0 +1,32 @@
+trigger: none
+
+pool:
+  name: "agent-project1"
+  demands:
+    - Agent.Name -equals agent1
+
+stages:
+- stage: stage1
+  displayName: Copy only TXT files
+
+  jobs:
+  - job: copytxtfiles
+
+    steps:
+
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: 'Copy only TXT files to Storage Account'
+      inputs:
+        azureSubscription: 'connection1'
+        scriptType: 'ps'
+        scriptLocation: 'inlineScript'
+        inlineScript: |
+          az storage blob upload-batch `
+            --account-name swethaacc `
+            --destination container1-swe `
+            --source "$(Build.SourcesDirectory)" `
+            --pattern "*.txt" `
+            --auth-mode login `
+            --overwrite true

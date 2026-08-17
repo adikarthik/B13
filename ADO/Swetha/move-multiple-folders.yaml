@@ -1,0 +1,27 @@
+
+#Task 4: Move All the Content of a Folder from Azure DevOps Repo to an Azure Storage Blob Container Using a YAML Pipeline
+
+trigger: none
+
+pool:
+  name: "agent-project1"
+  demands:
+    - Agent.Name -equals agent1
+
+stages:
+- stage: stage1
+  displayName: copy-files
+
+  jobs:
+  - job: azureblobcopyfiles
+
+    steps:
+    - task: AzureFileCopy@6
+      displayName: Storageaccount
+
+      inputs:
+        SourcePath: 'class 7'
+        azureSubscription: 'connection1'
+        Destination: 'AzureBlob'
+        storage: 'swethaacc'
+        ContainerName: 'container1-swe'

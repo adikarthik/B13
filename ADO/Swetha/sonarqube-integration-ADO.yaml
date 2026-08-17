@@ -1,0 +1,30 @@
+trigger:
+- main
+
+pool:
+  name: agent-project1
+  demands:
+  - Agent.Name -equals agent1
+
+steps:
+
+- checkout: self
+
+- task: SonarQubePrepare@7
+  inputs:
+    SonarQube: 'SonarQube-Connection'
+    scannerMode: 'Other'
+    extraProperties: |
+      sonar.projectKey=test-project
+      sonar.projectName=test-project
+
+- task: Maven@4
+  inputs:
+    mavenPomFile: 'Amazon/pom.xml'
+    goals: 'clean verify'
+    publishJUnitResults: true
+    sonarQubeRunAnalysis: true
+
+- task: SonarQubePublish@7
+  inputs:
+    pollingTimeoutSec: '300'

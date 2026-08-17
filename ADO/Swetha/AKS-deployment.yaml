@@ -1,0 +1,16 @@
+trigger: none
+
+pool:
+  name: agent-project1
+
+steps:
+
+- task: KubernetesManifest@1
+  displayName: Deploy to AKS
+  inputs:
+    action: deploy
+    connectionType: azureResourceManager
+    azureSubscriptionConnection: connection1
+    azureResourceGroup: aks-rg-swe
+    kubernetesCluster: aks-swetha
+    manifests: k8s/class 13/deployment.yaml

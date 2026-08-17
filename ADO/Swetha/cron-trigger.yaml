@@ -1,0 +1,17 @@
+#3. Configure an Azure DevOps YAML pipeline to run automatically at a specific time or at regular intervals.
+#Run Every Day at 8:00 PM IST
+trigger: none
+
+schedules:                         #defines schedule
+- cron: "30 14 * * *"
+  displayName: Daily 8 PM IST
+  branches:
+    include:
+    - test
+  always: true                     #Run the pipeline even if there are no code changes.
+
+pool:
+  name: agent-project1
+
+steps:
+- script: echo "Running at 8 PM IST"

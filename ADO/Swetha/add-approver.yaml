@@ -1,0 +1,30 @@
+trigger: none
+
+pool:
+  name: "agent-project1"
+  demands:
+    - Agent.Name -equals agent1
+
+stages:
+- stage: stage1
+  displayName: copy-files
+
+  jobs:
+  - deployment: test_deployment
+    displayName: copy-file approval task
+
+    environment: dev-approve
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          - task: AzureFileCopy@6
+            displayName: Storageaccount
+            inputs:
+              SourcePath: '$(Build.SourcesDirectory)\class 8\Azure-devops-class5.txt'
+              azureSubscription: 'connection1'
+              Destination: 'AzureBlob'
+              storage: 'swethaacc'
+              ContainerName: 'container1-swe'

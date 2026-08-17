@@ -1,0 +1,17 @@
+services:
+   nginx:
+    image: nginx
+    ports: 
+      - "8070:80"
+    volumes:
+      - myvolume1:/app
+    networks:
+      - mynetwork2
+
+volumes:
+  myvolume1:
+    external: true
+
+networks:
+  mynetwork2:
+   external: true  

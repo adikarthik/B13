@@ -1,0 +1,126 @@
+trigger: none
+
+pool:
+  name: agent-project1
+
+variables:
+  azureServiceConnection: 'connection1'
+  sonarServiceConnection: 'SonarQube-Connection'
+  sonarProjectKey: 'test-project'
+  sonarProjectName: 'test-project'
+  workingDirectory: '$(Build.SourcesDirectory)/terraform-storage-sonarqube-creation'
+
+stages:
+
+- stage: SonarQube
+  displayName: 'SonarQube Analysis'
+
+  jobs:
+  - job: SonarJob
+    displayName: 'Run SonarQube Analysis'
+
+    steps:
+
+    - checkout: self
+      fetchDepth: 0
+
+    - task: SonarQubePrepare@8
+      displayName: 'Prepare SonarQube Analysis'
+      inputs:
+        SonarQube: '$(sonarServiceConnection)'
+        scannerMode: 'cli'
+        configMode: 'manual'
+        cliProjectKey: '$(sonarProjectKey)'
+        cliProjectName: '$(sonarProjectName)'
+        cliSources: '.'
+        extraProperties: |
+          sonar.exclusions=**/.terraform/**
+
+    - task: SonarQubeAnalyze@8
+      displayName: 'Run SonarQube Analysis'
+
+    - task: SonarQubePublish@8
+      displayName: 'Publish Quality Gate Result'
+      inputs:
+        pollingTimeoutSec: '300'
+
+
+- stage: TerraformInit
+  displayName: 'Terraform Init'
+
+  dependsOn: SonarQube
+  condition: succeeded()
+
+  jobs:
+  - job: Init
+    displayName: 'Terraform Init'
+
+    steps:
+
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: 'Terraform Init'
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: 'ps'
+        scriptLocation: 'inlineScript'
+        workingDirectory: '$(workingDirectory)'
+        inlineScript: |
+          terraform --version
+          terraform init
+
+
+- stage: TerraformPlan
+  displayName: 'Terraform Plan'
+
+  dependsOn: TerraformInit
+  condition: succeeded()
+
+  jobs:
+  - job: Plan
+    displayName: 'Terraform Plan'
+
+    steps:
+
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: 'Terraform Plan'
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: 'ps'
+        scriptLocation: 'inlineScript'
+        workingDirectory: '$(workingDirectory)'
+        inlineScript: |
+          terraform init
+          terraform plan -out=tfplan
+
+
+- stage: TerraformApply
+  displayName: 'Terraform Apply'
+
+  dependsOn:
+  - SonarQube
+  - TerraformPlan
+
+  condition: and(succeeded('SonarQube'), succeeded('TerraformPlan'))
+
+  jobs:
+  - job: Apply
+    displayName: 'Create Azure Infrastructure'
+
+    steps:
+
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: 'Terraform Apply'
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: 'ps'
+        scriptLocation: 'inlineScript'
+        workingDirectory: '$(workingDirectory)'
+        inlineScript: |
+          terraform init
+          terraform apply -auto-approve

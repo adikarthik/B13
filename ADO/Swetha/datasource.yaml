@@ -1,0 +1,92 @@
+trigger: none
+
+pool:
+  name: "agent-project1"
+
+variables:
+  azureServiceConnection: "connection1"
+
+stages:
+
+- stage: Init
+  displayName: Terraform Init
+
+  jobs:
+  - job: TerraformInit
+    displayName: Terraform Init
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init
+      inputs:
+        azureSubscription: "$(azureServiceConnection)"
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: "$(Build.SourcesDirectory)/existing-rg + new storage account-terraform"
+        inlineScript: |
+          terraform version
+          terraform init
+
+- stage: Plan
+  displayName: Terraform Plan
+  dependsOn: Init
+
+  jobs:
+  - job: TerraformPlan
+    displayName: Terraform Plan
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init
+      inputs:
+        azureSubscription: "$(azureServiceConnection)"
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: "$(Build.SourcesDirectory)/existing-rg + new storage account-terraform"
+        inlineScript: |
+          terraform init
+
+    - task: AzureCLI@2
+      displayName: Terraform Plan
+      inputs:
+        azureSubscription: "$(azureServiceConnection)"
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: "$(Build.SourcesDirectory)/existing-rg + new storage account-terraform"
+        inlineScript: |
+          terraform plan
+
+- stage: Apply
+  displayName: Terraform Apply
+  dependsOn: Plan
+
+  jobs:
+  - job: TerraformApply
+    displayName: Terraform Apply
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init
+      inputs:
+        azureSubscription: "$(azureServiceConnection)"
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: "$(Build.SourcesDirectory)/existing-rg + new storage account-terraform"
+        inlineScript: |
+          terraform init
+
+    - task: AzureCLI@2
+      displayName: Terraform Apply
+      inputs:
+        azureSubscription: "$(azureServiceConnection)"
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: "$(Build.SourcesDirectory)/existing-rg + new storage account-terraform"
+        inlineScript: |
+          terraform apply -auto-approve

@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+
+  demo1:
+    build:
+      context: .
+      dockerfile: demo1.Dockerfile
+    container_name: demo1-jar-container
+    ports:
+      - "9090:80"
+
+  amazon:
+    build:
+      context: .
+      dockerfile: amazon.Dockerfile
+    container_name: amazon-war-container
+    ports:
+      - "8081:8080"

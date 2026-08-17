@@ -1,0 +1,27 @@
+#Task: Link a keyvault to azure devops variable group and run the pipeline-do it in yaml 
+
+trigger: none
+
+pool:
+  name: 'agent-project1'
+
+variables:
+- group: from-key-vault
+
+stages:
+- stage: CopyToStorage
+  displayName: Copy Files to Azure Storage
+
+  jobs:
+  - job: AzureBlobCopyJob
+    displayName: Copy Files
+
+    steps:
+    - task: AzureFileCopy@6
+      displayName: Copy Files to Storage Account
+      inputs:
+        SourcePath: '$(Build.SourcesDirectory)/files/*'
+        azureSubscription: 'connection1'
+        Destination: 'AzureBlob'
+        storage: '$(storageaccount)'
+        ContainerName: '$(containername)'

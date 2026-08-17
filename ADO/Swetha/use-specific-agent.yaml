@@ -1,0 +1,18 @@
+
+trigger: none
+
+pool:
+  name: agent-project1
+  demands:
+  - Agent.Name -equals agent1
+
+stages:
+- stage: stage1
+  displayName: PrintText
+
+  jobs:
+  - job: PrintMessage
+
+    steps:
+    - script: echo "Pipeline triggered automatically from test branch"
+

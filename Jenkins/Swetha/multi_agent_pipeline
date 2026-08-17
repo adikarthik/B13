@@ -1,0 +1,35 @@
+pipeline {
+    agent none
+
+    stages {
+
+        stage('Checkout') {
+            agent any
+
+            steps {
+                git url: 'https://github.com/Swetha98867/Amazon.git',
+                    branch: 'master'
+
+                stash name: 'source'
+            }
+        }
+
+        stage('Build') {
+            agent { label 'node1' }
+
+            steps {
+                unstash 'source'
+                sh 'cd Amazon && mvn compile'
+            }
+        }
+
+        stage('Test') {
+            agent { label 'node2' }
+
+            steps {
+                unstash 'source'
+                sh 'cd Amazon && mvn test'
+            }
+        }
+    }
+}

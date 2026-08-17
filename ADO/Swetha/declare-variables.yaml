@@ -1,0 +1,28 @@
+trigger: none
+
+pool:
+  name: "agent-project1"
+  demands:
+    - Agent.Name -equals agent1
+
+variables:
+  storageaccountname: swethaacc
+  storagecontainername: container1-swe
+
+stages:
+- stage: CopyStage
+  displayName: Copy Files to Azure Blob
+
+  jobs:
+  - job: AzureBlobCopyJob
+    displayName: Copy File
+
+    steps:
+    - task: AzureFileCopy@6
+      displayName: StorageAccountFileTransfer
+      inputs:
+        SourcePath: '$(Build.SourcesDirectory)\class 8\Azure-devops-class5.txt'
+        azureSubscription: 'connection1'
+        Destination: 'AzureBlob'
+        storage: '$(storageaccountname)'
+        ContainerName: '$(storagecontainername)'

@@ -1,0 +1,16 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Deploy to Tomcat') {
+            steps {
+                deploy adapters: [tomcat9(
+                    credentialsId: 'tomcat-cred',
+                    url: 'http://localhost:8081'
+                )],
+                contextPath: 'amazon',
+                war: 'Amazon.war'
+            }
+        }
+    }
+}

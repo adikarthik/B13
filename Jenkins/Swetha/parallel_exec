@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/Swetha98867/Amazon.git', branch: 'master'
+                stash name: 'sourcecode', includes: '**/*'
+            }
+        }
+
+        stage('Parallel Execution') {
+            parallel {
+                stage('Build') {
+                    agent { label 'node1' }
+                    steps {
+                        unstash 'sourcecode'
+                        sh 'cd Amazon && mvn compile'
+                    }
+                }
+
+                stage('Test') {
+                    agent { label 'node2' }
+                    steps {
+                        unstash 'sourcecode'
+                        sh 'cd Amazon && mvn test'
+                    }
+                }
+            }
+        }
+
+        stage('Package') {
+            agent { label 'node3' }
+            steps {
+                unstash 'sourcecode'
+                sh 'cd Amazon && mvn package -DskipTests'
+            }
+        }
+    }
+}

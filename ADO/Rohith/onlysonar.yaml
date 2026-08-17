@@ -1,0 +1,43 @@
+trigger: none
+
+pool:
+  name: DevopsPool
+
+variables:
+  azureServiceConnection: 'myservice'
+  backendResourceGroup: 'rp'
+  backendStorageAccount: 'rpblob'
+  backendContainer: 'rpcontainer'
+  backendKey: 'rohith.tfstate'
+
+stages:
+
+- stage: SonarQube
+  displayName: SonarQube Analysis
+  
+  jobs:
+
+  - job: SonarQubeJob
+    displayName: SonarQube Analysis
+
+    steps:
+    - checkout: self
+
+    - task: SonarCloudPrepare@3
+      displayName: Prepare SonarCloud Analysis
+      inputs:
+        SonarCloud: 'sonarqube-cloud'
+        organization: 'rohithrohi246'
+        scannerMode: 'CLI'
+        configMode: 'manual'
+        cliProjectKey: 'rohithrohi246'
+        cliProjectName: 'rohithrohi246'
+        cliSources: '.'
+
+    - task: SonarCloudAnalyze@3
+      displayName: Run SonarCloud Analysis
+
+    - task: SonarCloudPublish@3
+      displayName: Publish SonarCloud Quality Gate
+      inputs:
+        pollingTimeoutSec: '300'

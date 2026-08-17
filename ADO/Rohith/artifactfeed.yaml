@@ -1,0 +1,25 @@
+trigger: none
+
+pool:
+  name: 'DevopsPool'
+
+steps:
+
+# Authenticate to Azure Artifacts feed
+- task: MavenAuthenticate@0
+  inputs:
+    artifactsFeeds: 'rp-feed'
+
+- script: java -version
+  displayName: 'Check Java Version'
+
+
+- script: mvn clean deploy
+  displayName: 'Build and Publish to Azure Artifacts'
+
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/target'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'

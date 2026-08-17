@@ -1,0 +1,29 @@
+trigger: none
+
+pool:
+  name: DevopsPool
+
+stages:
+- stage: CopyStage
+  displayName: Copy Files to Azure Blob
+
+  jobs:
+  - deployment: AzureBlobCopyDeployment
+    displayName: Copy File to Azure Blob
+
+    environment: Environment01
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+        
+          - task: AzureFileCopy@6
+            displayName: StorageAccountFileTransfer
+            inputs:
+              SourcePath: '$(Build.SourcesDirectory)'
+              azureSubscription: 'myservice'
+              Destination: AzureBlob
+              storage: 'rpstorage08'
+              ContainerName: 'rpcontainer'

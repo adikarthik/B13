@@ -1,0 +1,23 @@
+trigger: none
+ 
+pool:
+  name: DevopsPool
+variables:
+- group: BlobVariableGroup
+
+stages:
+- stage: copystage
+  displayName: copy-files
+ 
+  jobs:
+  - job: AzureBlobCopyJob
+ 
+    steps:
+    - task: AzureFileCopy@6
+      displayName: StorageAccountFileTransfer
+      inputs:
+        SourcePath: 'Azure-devops-class1.txt'
+        azureSubscription: 'myservice'
+        Destination: AzureBlob
+        storage: '$(storagename)'
+        ContainerName: '$(containername)'

@@ -1,0 +1,18 @@
+trigger: none
+
+pool:
+  name: DevopsPool
+
+stages:
+- stage: BuildArtifact
+  displayName: ArtifactGenerating
+
+  jobs:
+  - job: PublishingArtifact
+
+    steps:
+    - checkout: self
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Pipeline Artifact'
+      inputs:
+        targetPath: 'README.md'

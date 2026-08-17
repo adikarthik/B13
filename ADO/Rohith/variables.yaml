@@ -1,0 +1,24 @@
+trigger: none
+ 
+pool:
+  name: DevopsPool
+variables:
+  storagename: rpstorage08
+  containername: rpcontainer
+ 
+stages:
+- stage: copystage
+  displayName: copy-files
+ 
+  jobs:
+  - job: AzureBlobCopyJob
+ 
+    steps:
+    - task: AzureFileCopy@6
+      displayName: StorageAccountFileTransfer
+      inputs:
+        SourcePath: 'AzureDevRecords.txt'
+        azureSubscription: 'myservice'
+        Destination: AzureBlob
+        storage: '$(storagename)'
+        ContainerName: '$(containername)'

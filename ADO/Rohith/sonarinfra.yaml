@@ -1,0 +1,152 @@
+trigger: none
+
+pool:
+  name: DevopsPool
+
+variables:
+  azureServiceConnection: 'myservice'
+  backendResourceGroup: 'rp'
+  backendStorageAccount: 'rpblob'
+  backendContainer: 'rpcontainer'
+  backendKey: 'rohith.tfstate'
+
+stages:
+
+- stage: Init
+  displayName: Terraform Init
+
+  jobs:
+
+  - job: InitJob
+    displayName: Terraform Init
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: '$(Build.SourcesDirectory)\Files'
+        inlineScript: |
+          terraform version
+
+          terraform init `
+            -backend-config="resource_group_name=$(backendResourceGroup)" `
+            -backend-config="storage_account_name=$(backendStorageAccount)" `
+            -backend-config="container_name=$(backendContainer)" `
+            -backend-config="key=$(backendKey)"
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish Terraform Files
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)'
+        artifact: terraform-files
+
+- stage: SonarQube
+  displayName: SonarQube Analysis
+  
+  jobs:
+
+  - job: SonarQubeJob
+    displayName: SonarQube Analysis
+
+    steps:
+    - checkout: self
+
+    - task: SonarCloudPrepare@3
+      displayName: Prepare SonarCloud Analysis
+      inputs:
+        SonarCloud: 'sonarqube-cloud'
+        organization: 'rohithrohi246'
+        scannerMode: 'CLI'
+        configMode: 'manual'
+        cliProjectKey: 'rohithrohi246'
+        cliProjectName: 'rohithrohi246'
+        cliSources: '.'
+
+    - task: SonarCloudAnalyze@3
+      displayName: Run SonarCloud Analysis
+
+    - task: SonarCloudPublish@3
+      displayName: Publish SonarCloud Quality Gate
+      inputs:
+        pollingTimeoutSec: '300'
+
+- stage: Plan
+  displayName: Terraform Plan
+  dependsOn: Init
+
+  jobs:
+
+  - job: PlanJob
+    displayName: Terraform Plan
+
+    steps:
+    - checkout: self
+
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Terraform Files
+      inputs:
+        artifact: terraform-files
+        path: '$(Pipeline.Workspace)\terraform-files'
+
+    - task: PowerShell@2
+      displayName: Copy Terraform Files
+      inputs:
+        targetType: inline
+        script: |
+          Copy-Item `
+            -Path "$(Pipeline.Workspace)\terraform-files\*" `
+            -Destination "$(Build.SourcesDirectory)" `
+            -Recurse -Force
+
+    - task: AzureCLI@2
+      displayName: Terraform Plan
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: '$(Build.SourcesDirectory)\Files'
+        inlineScript: |
+          terraform plan
+
+- stage: Apply
+  displayName: Terraform Apply
+  dependsOn: Plan
+
+  jobs:
+
+  - job: ApplyJob
+    displayName: Terraform Apply
+
+    steps:
+    - checkout: self
+
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Terraform Files
+      inputs:
+        artifact: terraform-files
+        path: '$(Pipeline.Workspace)\terraform-files'
+
+    - task: PowerShell@2
+      displayName: Copy Terraform Files
+      inputs:
+        targetType: inline
+        script: |
+          Copy-Item `
+            -Path "$(Pipeline.Workspace)\terraform-files\*" `
+            -Destination "$(Build.SourcesDirectory)" `
+            -Recurse -Force
+
+    - task: AzureCLI@2
+      displayName: Terraform Apply
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: '$(Build.SourcesDirectory)\Files'
+        inlineScript: |
+          terraform apply -auto-approve

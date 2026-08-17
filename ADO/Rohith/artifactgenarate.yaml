@@ -1,0 +1,21 @@
+trigger: none
+
+pool:
+  name: 'DevopsPool'
+
+steps:
+
+# Just verify Java version (optional but helpful)
+- script: java -version
+  displayName: 'Check Java Version'
+
+# Build with Maven
+- script: mvn clean package
+  displayName: 'Build with Maven'
+
+# Publish the generated jar
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/target'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'

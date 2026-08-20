@@ -1,0 +1,24 @@
+trigger: none
+ 
+pool:
+  name: DevopsPool
+variables:
+  storagename: sanju01
+  containername: sancont
+ 
+stages:
+- stage: copystage
+  displayName: copy-files
+ 
+  jobs:
+  - job: AzureBlobCopyJob
+ 
+    steps:
+    - task: AzureFileCopy@6
+      displayName: StorageAccountFileTransfer
+      inputs:
+        SourcePath: 'RK task.txt'
+        azureSubscription: 'sanju-app'
+        Destination: AzureBlob
+        storage: '$(storagename)'
+        ContainerName: '$(containername)'

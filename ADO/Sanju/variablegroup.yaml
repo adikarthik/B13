@@ -1,0 +1,23 @@
+trigger: none
+ 
+pool:
+  name: B13-Pool
+variables:
+- group: BlobVariableGroup
+
+stages:
+- stage: copystage
+  displayName: copy-files
+ 
+  jobs:
+  - job: AzureBlobCopyJob
+ 
+    steps:
+    - task: AzureFileCopy@6
+      displayName: StorageAccountFileTransfer
+      inputs:
+        SourcePath: 'Azure-class1.txt'
+        azureSubscription: 'sanju-app'
+        Destination: AzureBlob
+        storage: '$(storagename)'
+        ContainerName: '$(containername)'

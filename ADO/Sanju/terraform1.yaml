@@ -1,0 +1,119 @@
+trigger: none
+
+pool:
+  name: B13-pool
+
+variables:
+  azureServiceConnection: 'sanjuapp'
+
+  sonarQubeConnection: 'Sonar-self'
+  sonarProjectKey: 'Devops_Devops_881b80ec-1ebb-458c-8e6f-600dde375360'
+  sonarProjectName: 'Devops'
+
+  backendResourceGroup: 'rg-sanju'
+  backendStorageAccount: 'sanju01'
+  backendContainer: 'sacont'
+  backendKey: 'B13.tfstate'
+
+stages:
+- stage: SonarQube
+  displayName: SonarQube Server Scan
+
+  jobs:
+  - job: SonarQubeScanJob
+    displayName: Run SonarQube Analysis
+
+    steps:
+    - checkout: self
+
+    - task: SonarQubePrepare@7
+      displayName: Prepare SonarQube Analysis
+      inputs:
+        SonarQube: '$(sonarQubeConnection)'
+        scannerMode: 'cli'
+        configMode: 'manual'
+        cliProjectKey: '$(sonarProjectKey)'
+        cliProjectName: '$(sonarProjectName)'
+        cliSources: '.'
+
+    - task: SonarQubeAnalyze@7
+      displayName: Run SonarQube Analysis
+
+    - task: SonarQubePublish@7
+      displayName: Publish SonarQube Quality Gate
+      inputs:
+        pollingTimeoutSec: '300'
+- stage: Init
+  displayName: Terraform Init
+
+  jobs:
+  - job: InitJob
+    displayName: Terraform Init
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: '$(Build.SourcesDirectory)\terraform'
+        inlineScript: |
+          terraform version
+
+          terraform init `
+            -backend-config="resource_group_name=$(backendResourceGroup)" `
+            -backend-config="storage_account_name=$(backendStorageAccount)" `
+            -backend-config="container_name=$(backendContainer)" `
+            -backend-config="key=$(backendKey)"
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish Terraform Files
+      inputs:
+        targetPath: '$(Build.SourcesDirectory)\terraform'
+        artifact: terraform-files
+
+- stage: Plan
+  displayName: Terraform Plan
+  dependsOn: Init
+
+  jobs:
+  - job: PlanJob
+    displayName: Terraform Plan
+
+    steps:
+    - checkout: self
+
+    - task: DownloadPipelineArtifact@2
+      displayName: Download Terraform Files
+      inputs:
+        artifact: terraform-files
+        path: '$(Pipeline.Workspace)\terraform'
+
+    - task: PowerShell@2
+      displayName: Copy Terraform Files
+      inputs:
+        targetType: inline
+        script: |
+          Copy-Item `
+            -Path "$(Pipeline.Workspace)\terraform\*" `
+            -Destination "$(Build.SourcesDirectory)\terraform" `
+            -Recurse -Force
+
+    - task: AzureCLI@2
+      displayName: Terraform Plan
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: ps
+        scriptLocation: inlineScript
+        workingDirectory: '$(Build.SourcesDirectory)\terraform'
+        inlineScript: |
+          terraform init `
+            -backend-config="resource_group_name=$(backendResourceGroup)" `
+            -backend-config="storage_account_name=$(backendStorageAccount)" `
+            -backend-config="container_name=$(backendContainer)" `
+            -backend-config="key=$(backendKey)"
+
+          terraform plan

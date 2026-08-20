@@ -1,0 +1,28 @@
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: demo
+  labels:
+    app: demo
+
+spec:
+  replicas: 1
+  serviceName: demo
+
+  selector:
+    matchLabels:
+      app: demo
+
+  template:
+    metadata:
+      labels:
+        app: demo
+
+    spec:
+      containers:
+        - name: demo
+          image: gousia00/myfirstimage
+          ports:
+            - containerPort: 9090            
+  

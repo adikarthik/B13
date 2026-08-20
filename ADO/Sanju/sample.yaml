@@ -1,0 +1,19 @@
+trigger: none
+pool:
+  name: B13-pool
+stages:
+- stage: Buildstage
+  displayName: build-files
+  jobs:
+  - job: AzureBlobCopyJob
+    steps:
+    - task: AzureFileCopy@6
+      displayName: StorageAcoountFileTransfer
+      inputs:
+        SourcePath: 'JS,sreact,spring.txt'
+        azureSubscription: 'sanjuapp'
+        Destination: AzureBlob
+        storage: 'sanju01'
+        ContainerName: 'sancont'
+        
+

@@ -1,0 +1,16 @@
+trigger: none
+
+pool:
+  name: B13-poolPool
+
+steps:
+
+- task: KubernetesManifest@1
+  displayName: Deploy to AKS
+  inputs:
+    action: deploy
+    connectionType: azureResourceManager
+    azureSubscriptionConnection: myservice
+    azureResourceGroup: sanju01
+    kubernetesCluster: sancont
+    manifests: deployment.yaml

@@ -1,0 +1,53 @@
+trigger: none
+
+pool:
+  name: GUC-AP
+
+stages:
+- stage: EnvironmentStage
+  displayName: Environment Approval Demo
+
+  jobs:
+  - deployment: EnvironmentDeployment
+    displayName: Deploy to Environment
+
+    environment: GUC-DEV-APPROVAL
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          - checkout: self
+
+          - task: AzureCLI@2
+            displayName: Environment Demo
+            inputs:
+              azureSubscription: GUC-SERVICE
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+
+                echo "===== Environment Approval Demo ====="
+
+                echo "Current Directory:"
+                pwd
+
+                echo ""
+
+                echo "Repository Files:"
+                ls -lh
+
+                echo ""
+
+                echo "Azure Account:"
+                az account show --output table
+
+                echo ""
+
+                echo "Storage Accounts:"
+                az storage account list --output table
+
+                echo ""
+
+                echo "Environment Deployment Successful!"

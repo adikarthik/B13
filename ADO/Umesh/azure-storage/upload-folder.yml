@@ -1,0 +1,48 @@
+# Demo: Using Pipeline Variable + Variable Group
+displayName: Variable Group Demo
+	
+trigger: none
+
+pool:
+  name: GUC-AP
+  demands:
+    - Agent.Name -equals GUC-AG-1
+
+variables:
+- group: VG-Storage
+
+steps:
+
+- task: AzureCLI@2
+  displayName: "Upload Complete Folder"
+  inputs:
+    azureSubscription: GUC-SERVICE
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+
+      echo "===== Current Folder ====="
+      pwd
+
+      echo ""
+      echo "===== Repository Files ====="
+      ls -R
+
+      echo ""
+      echo "===== Uploading Complete Folder ====="
+
+      az storage blob upload-batch \
+        --account-name $(storageaccountname) \
+        --destination $(container) \
+        --source . \
+        --auth-mode login \
+        --overwrite
+
+      echo ""
+      echo "===== Uploaded Blobs ====="
+
+      az storage blob list \
+        --account-name $(storageaccountname) \
+        --container-name $(container) \
+        --auth-mode login \
+        --output table

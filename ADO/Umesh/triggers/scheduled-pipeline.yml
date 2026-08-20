@@ -1,0 +1,22 @@
+trigger: none
+
+schedules:
+- cron: "25 0 * * *"
+  displayName: Daily 5:55 AM IST
+  branches:
+    include:
+      - main
+  always: true
+
+pool:
+  name: GUC-AP
+  demands:
+  - Agent.Name -equals GUC-AG-1
+
+steps:
+- script: |
+    echo "Hello! This pipeline was triggered by a schedule."
+    date
+    pwd
+    ls -la
+  displayName: "Scheduled Pipeline Demo"

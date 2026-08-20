@@ -1,0 +1,41 @@
+trigger: none
+
+pool:
+  name: GUC-AP
+
+variables:
+  storageaccountname: gucstorage
+  storagecontainername: container1
+
+stages:
+- stage: CopyStage
+  displayName: Copy Files to Azure Blob
+
+  jobs:
+  - job: AzureBlobCopyJob
+    displayName: Copy File
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Upload File to Blob
+      inputs:
+        azureSubscription: GUC-SERVICE
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+
+          az storage blob upload \
+            --account-name $(storageaccountname) \
+            --container-name $(storagecontainername) \
+            --name "Azure Devops class-7.txt" \
+            --file "Azure Devops class-7.txt" \
+            --auth-mode login \
+            --overwrite
+
+          az storage blob list \
+            --account-name $(storageaccountname) \
+            --container-name $(storagecontainername) \
+            --auth-mode login \
+            --output table

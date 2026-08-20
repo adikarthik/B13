@@ -1,0 +1,24 @@
+trigger: none
+
+pool:
+  name: GUC-AP
+
+steps:
+
+- checkout: self
+
+- script: |
+    java -version
+    mvn -version
+  displayName: 'Check Java and Maven'
+
+- script: |
+    mvn clean package
+  displayName: 'Build Maven Application'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Build Artifact'
+  inputs:
+    PathtoPublish: '$(System.DefaultWorkingDirectory)/target'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'

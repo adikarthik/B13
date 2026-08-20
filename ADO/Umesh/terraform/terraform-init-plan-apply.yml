@@ -1,0 +1,126 @@
+trigger: none
+
+pool:
+  name: GUC-AP
+
+variables:
+  azureServiceConnection: 'GUC-SERVICE'
+  terraformWorkingDirectory: '$(Build.SourcesDirectory)/terraformcicd/dev'
+
+stages:
+
+# ============================================================
+# STAGE 1 - TERRAFORM INIT
+# ============================================================
+
+- stage: Init
+  displayName: Terraform Init
+
+  jobs:
+  - job: InitJob
+    displayName: Terraform Init
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        workingDirectory: '$(terraformWorkingDirectory)'
+        inlineScript: |
+          echo "========================================="
+          echo "Terraform Version"
+          echo "========================================="
+          terraform version
+
+          echo "========================================="
+          echo "Terraform Init"
+          echo "========================================="
+          terraform init
+
+
+# ============================================================
+# STAGE 2 - TERRAFORM PLAN
+# ============================================================
+
+- stage: Plan
+  displayName: Terraform Plan
+  dependsOn: Init
+
+  jobs:
+  - job: PlanJob
+    displayName: Terraform Plan
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init for Plan
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        workingDirectory: '$(terraformWorkingDirectory)'
+        inlineScript: |
+          echo "========================================="
+          echo "Terraform Init"
+          echo "========================================="
+          terraform init
+
+    - task: AzureCLI@2
+      displayName: Terraform Plan
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        workingDirectory: '$(terraformWorkingDirectory)'
+        inlineScript: |
+          echo "========================================="
+          echo "Terraform Plan"
+          echo "========================================="
+          terraform plan
+
+
+# ============================================================
+# STAGE 3 - TERRAFORM APPLY
+# ============================================================
+
+- stage: Apply
+  displayName: Terraform Apply
+  dependsOn: Plan
+
+  jobs:
+  - job: ApplyJob
+    displayName: Terraform Apply
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init for Apply
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        workingDirectory: '$(terraformWorkingDirectory)'
+        inlineScript: |
+          echo "========================================="
+          echo "Terraform Init"
+          echo "========================================="
+          terraform init
+
+    - task: AzureCLI@2
+      displayName: Terraform Apply
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        workingDirectory: '$(terraformWorkingDirectory)'
+        inlineScript: |
+          echo "========================================="
+          echo "Terraform Apply"
+          echo "========================================="
+          terraform apply -auto-approve

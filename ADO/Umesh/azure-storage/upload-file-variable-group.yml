@@ -1,0 +1,58 @@
+trigger: none
+
+pool:
+  name: GUC-AP
+  demands:
+    - Agent.Name -equals GUC-AG-1
+
+variables:
+- group: VG-Storage
+
+steps:
+
+- task: AzureCLI@2
+  displayName: "Upload Class 7 Files"
+  inputs:
+    azureSubscription: "GUC-SERVICE"
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+
+      echo "Storage Account = $(storageaccountname)"
+      echo "Container = $(container)"
+
+      echo ""
+      echo "Available Containers"
+
+      az storage container list \
+        --account-name $(storageaccountname) \
+        --auth-mode login \
+        --output table
+
+      echo ""
+      echo "Uploading learning files..."
+
+      for file in \
+        "pipeline-triggers.txt" \
+        "azure-pipeline-components.txt" \
+        "Azure Devops class-7.txt"
+      do
+        echo "Uploading $file"
+
+        az storage blob upload \
+          --account-name $(storageaccountname) \
+          --container-name $(container) \
+          --file "$file" \
+          --name "$file" \
+          --auth-mode login \
+          --overwrite
+      done
+
+      echo ""
+      echo "Uploaded blobs"
+
+      az storage blob list \
+        --account-name $(storageaccountname) \
+        --container-name $(container) \
+        --auth-mode login \
+        --output table

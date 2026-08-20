@@ -1,0 +1,32 @@
+trigger: none
+
+pool:
+  name: GUC-AP
+
+variables:
+  kubernetesServiceConnection: 'GUC-AKS'
+  kubernetesNamespace: 'default'
+
+stages:
+
+- stage: Deploy
+  displayName: Deploy to AKS
+
+  jobs:
+  - job: DeployToAKS
+    displayName: Deploy nginx to AKS
+
+    steps:
+
+    # Checkout Azure Repos
+    - checkout: self
+
+    # Deploy Kubernetes manifest
+    - task: KubernetesManifest@1
+      displayName: Deploy nginx Deployment
+      inputs:
+        action: deploy
+        kubernetesServiceConnection: '$(kubernetesServiceConnection)'
+        namespace: '$(kubernetesNamespace)'
+        manifests: |
+          deployment.yaml

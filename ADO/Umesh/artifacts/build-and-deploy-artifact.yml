@@ -1,0 +1,81 @@
+trigger: none
+
+pool:
+  name: GUC-AP
+
+stages:
+
+# ---------------- BUILD STAGE ----------------
+
+- stage: Build
+  displayName: Build Stage
+
+  jobs:
+
+  - job: BuildJob
+    displayName: Create Artifact
+
+    steps:
+
+    - checkout: self
+
+    - script: |
+        echo "Creating Build Artifact..."
+
+        mkdir output
+
+        cp "Azure Devops class-7.txt" output/
+
+        ls -lh output
+      displayName: Prepare Files
+
+    - task: PublishBuildArtifacts@1
+      displayName: Publish Artifact
+      inputs:
+        PathtoPublish: output
+        ArtifactName: BuildFiles
+        publishLocation: Container
+
+# ---------------- DEPLOY STAGE ----------------
+
+- stage: Deploy
+  displayName: Deploy Stage
+
+  dependsOn: Build
+
+  jobs:
+
+  - job: DeployJob
+    displayName: Deploy Build Artifact
+
+    steps:
+
+    - checkout: none
+
+    - task: DownloadBuildArtifacts@0
+      displayName: Download Artifact
+      inputs:
+        buildType: current
+        downloadType: single
+        artifactName: BuildFiles
+        downloadPath: $(Pipeline.Workspace)
+
+    - script: |
+
+        echo "Downloaded files"
+
+        find $(Pipeline.Workspace)
+
+        echo ""
+
+        mkdir -p ~/deployment
+
+        cp "$(Pipeline.Workspace)/BuildFiles/Azure Devops class-7.txt" ~/deployment/
+
+        echo ""
+
+        echo "Deployment completed"
+
+        ls -lh ~/deployment
+
+      displayName: Deploy Files

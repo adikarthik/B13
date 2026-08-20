@@ -1,0 +1,34 @@
+trigger: none
+
+pool:
+  name: GUC-AP
+
+steps:
+
+# ============================================================
+# STEP 1 - AUTHENTICATE TO AZURE ARTIFACTS
+# ============================================================
+
+- task: MavenAuthenticate@0
+  displayName: Authenticate to Azure Artifacts
+  inputs:
+    artifactsFeeds: 'guc-maven-feed'
+
+
+# ============================================================
+# STEP 2 - CHECK JAVA
+# ============================================================
+
+- script: |
+    java -version
+    mvn -version
+  displayName: Check Java and Maven Version
+
+
+# ============================================================
+# STEP 3 - BUILD AND PUBLISH TO AZURE ARTIFACTS
+# ============================================================
+
+- script: |
+    mvn clean deploy
+  displayName: Build and Deploy Maven Package

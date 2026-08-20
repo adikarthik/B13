@@ -1,0 +1,214 @@
+trigger: none
+
+pool:
+  name: GUC-AP
+
+variables:
+  azureServiceConnection: 'GUC-SERVICE'
+  sonarQubeConnection: 'SonarQube-Connection'
+  terraformWorkingDirectory: '$(Build.SourcesDirectory)/terraformcicd'
+
+stages:
+
+# ============================================================
+# STAGE 1 - TERRAFORM INIT
+# ============================================================
+
+- stage: Init
+  displayName: Terraform Init
+
+  jobs:
+  - job: InitJob
+    displayName: Terraform Init
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        workingDirectory: '$(terraformWorkingDirectory)'
+        inlineScript: |
+          echo "========================================="
+          echo "Terraform Version"
+          echo "========================================="
+          terraform version
+
+          echo "========================================="
+          echo "Terraform Init"
+          echo "========================================="
+          cd dev
+          terraform init
+
+          echo "========================================="
+          echo "Terraform Validate"
+          echo "========================================="
+          terraform validate
+
+
+# ============================================================
+# STAGE 2 - SONARQUBE ANALYSIS
+# ============================================================
+
+- stage: SonarQube
+  displayName: SonarQube Code Analysis
+  dependsOn: Init
+
+  jobs:
+  - job: SonarQubeJob
+    displayName: SonarQube Analysis
+
+    steps:
+    - checkout: self
+
+    # --------------------------------------------------------
+    # SonarQube Prepare
+    # --------------------------------------------------------
+
+    - task: SonarQubePrepare@7
+      displayName: Prepare SonarQube Analysis
+      inputs:
+        SonarQube: '$(sonarQubeConnection)'
+        scannerMode: 'cli'
+        configMode: 'manual'
+        cliProjectKey: 'GUCAzureDevOps-CLI-Lab'
+        cliProjectName: 'GUCAzureDevOps-CLI-Lab'
+        cliSources: 'terraformcicd'
+
+    # --------------------------------------------------------
+    # SonarQube Analyze
+    # --------------------------------------------------------
+
+    - task: SonarQubeAnalyze@7
+      displayName: Run SonarQube Analysis
+      inputs:
+        jdkversion: 'JAVA_HOME_21_X64'
+
+    # --------------------------------------------------------
+    # Publish Quality Gate Result
+    # --------------------------------------------------------
+
+    - task: SonarQubePublish@7
+      displayName: Publish SonarQube Quality Gate
+      inputs:
+        pollingTimeoutSec: '300'
+
+
+# ============================================================
+# STAGE 3 - TERRAFORM PLAN
+# ============================================================
+
+- stage: Plan
+  displayName: Terraform Plan
+  dependsOn: SonarQube
+
+  jobs:
+  - job: PlanJob
+    displayName: Terraform Plan
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init for Plan
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        workingDirectory: '$(terraformWorkingDirectory)/dev'
+        inlineScript: |
+          echo "========================================="
+          echo "Terraform Init"
+          echo "========================================="
+          terraform init
+
+    - task: AzureCLI@2
+      displayName: Terraform Plan
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        workingDirectory: '$(terraformWorkingDirectory)/dev'
+        inlineScript: |
+          echo "========================================="
+          echo "Terraform Plan"
+          echo "========================================="
+          terraform plan
+
+
+# ============================================================
+# STAGE 4 - TERRAFORM APPLY
+# ============================================================
+
+- stage: Apply
+  displayName: Terraform Apply
+  dependsOn: Plan
+
+  jobs:
+  - job: ApplyJob
+    displayName: Terraform Apply
+
+    steps:
+    - checkout: self
+
+    - task: AzureCLI@2
+      displayName: Terraform Init for Apply
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        workingDirectory: '$(terraformWorkingDirectory)/dev'
+        inlineScript: |
+          echo "========================================="
+          echo "Terraform Init"
+          echo "========================================="
+          terraform init
+
+    - task: AzureCLI@2
+      displayName: Terraform Apply
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        workingDirectory: '$(terraformWorkingDirectory)/dev'
+        inlineScript: |
+          echo "========================================="
+          echo "Terraform Apply"
+          echo "========================================="
+          terraform apply -auto-approve
+
+
+# ============================================================
+# STAGE 5 - PUBLISH ARTIFACT
+# ============================================================
+
+- stage: Artifact
+  displayName: Publish Terraform Artifact
+  dependsOn: Apply
+
+  jobs:
+  - job: ArtifactJob
+    displayName: Publish Terraform Files
+
+    steps:
+    - checkout: self
+
+    - task: CopyFiles@2
+      displayName: Copy Terraform Source Files
+      inputs:
+        SourceFolder: '$(terraformWorkingDirectory)'
+        Contents: |
+          **/*.tf
+          **/*.tfvars
+          **/*.hcl
+          **/.gitignore
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/terraform'
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish Terraform Artifact
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/terraform'
+        artifact: 'terraform-artifact'

@@ -1,0 +1,25 @@
+trigger: none
+
+pool:
+  name: GUC-AP
+
+steps:
+
+- checkout: self
+
+- script: |
+    echo "Creating Build Artifact..."
+
+    mkdir output
+
+    cp "Azure Devops class-7.txt" output/
+
+    ls -lh output
+  displayName: Prepare Files
+
+- task: PublishBuildArtifacts@1
+  displayName: Publish Build Artifact
+  inputs:
+    PathtoPublish: output
+    ArtifactName: BuildFiles
+    publishLocation: Container
